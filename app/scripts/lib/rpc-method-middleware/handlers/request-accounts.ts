@@ -28,7 +28,7 @@ import {
   GrantPermissionsForOrigin,
 } from './types';
 
-type RequestEthereumAccountsOptions = {
+export type RequestEthereumAccountsOptions = {
   getAccounts: GetAccounts;
   getUnlockPromise: GetUnlockPromise;
   sendMetrics: SendMetrics;
