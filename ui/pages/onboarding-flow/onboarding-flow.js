@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { Switch, Route, useHistory, useLocation } from 'react-router-dom';
+import { Switch, useHistory, useLocation } from 'react-router-dom';
+import { CompatRoute } from 'react-router-dom-v5-compat';
 import { useDispatch, useSelector } from 'react-redux';
 import Unlock from '../unlock-page';
 import {
@@ -132,7 +133,7 @@ export default function OnboardingFlow() {
       />
       <div className="onboarding-flow__wrapper">
         <Switch>
-          <Route
+          <CompatRoute
             path={ONBOARDING_CREATE_PASSWORD_ROUTE}
             render={(routeProps) => (
               <CreatePassword
@@ -143,11 +144,11 @@ export default function OnboardingFlow() {
               />
             )}
           />
-          <Route
+          <CompatRoute
             path={ONBOARDING_SECURE_YOUR_WALLET_ROUTE}
             component={SecureYourWallet}
           />
-          <Route
+          <CompatRoute
             path={ONBOARDING_REVIEW_SRP_ROUTE}
             render={() => (
               <ReviewRecoveryPhrase
@@ -155,7 +156,7 @@ export default function OnboardingFlow() {
               />
             )}
           />
-          <Route
+          <CompatRoute
             path={ONBOARDING_CONFIRM_SRP_ROUTE}
             render={() => (
               <ConfirmRecoveryPhrase
@@ -163,7 +164,7 @@ export default function OnboardingFlow() {
               />
             )}
           />
-          <Route
+          <CompatRoute
             path={ONBOARDING_IMPORT_WITH_SRP_ROUTE}
             render={(routeProps) => (
               <ImportSRP
@@ -172,36 +173,36 @@ export default function OnboardingFlow() {
               />
             )}
           />
-          <Route
+          <CompatRoute
             path={ONBOARDING_UNLOCK_ROUTE}
             render={(routeProps) => (
               <Unlock {...routeProps} onSubmit={handleUnlock} />
             )}
           />
-          <Route
+          <CompatRoute
             path={ONBOARDING_PRIVACY_SETTINGS_ROUTE}
             component={PrivacySettings}
           />
-          <Route
+          <CompatRoute
             path={ONBOARDING_COMPLETION_ROUTE}
             component={CreationSuccessful}
           />
-          <Route
+          <CompatRoute
             path={ONBOARDING_WELCOME_ROUTE}
             component={OnboardingWelcome}
           />
-          <Route
+          <CompatRoute
             path={ONBOARDING_PIN_EXTENSION_ROUTE}
             component={OnboardingPinExtension}
           />
-          <Route
+          <CompatRoute
             path={ONBOARDING_METAMETRICS}
             component={MetaMetricsComponent}
           />
           {
             ///: BEGIN:ONLY_INCLUDE_IF(build-flask)
           }
-          <Route
+          <CompatRoute
             path={ONBOARDING_EXPERIMENTAL_AREA}
             render={(routeProps) => (
               <ExperimentalArea
@@ -213,7 +214,7 @@ export default function OnboardingFlow() {
           {
             ///: END:ONLY_INCLUDE_IF
           }
-          <Route exact path="*" component={OnboardingFlowSwitch} />
+          <CompatRoute exact path="*" component={OnboardingFlowSwitch} />
         </Switch>
       </div>
       {pathname === ONBOARDING_COMPLETION_ROUTE && (
