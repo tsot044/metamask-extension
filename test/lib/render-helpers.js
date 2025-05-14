@@ -4,6 +4,7 @@ import { render } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
 import userEvent from '@testing-library/user-event';
 import { Router } from 'react-router-dom';
+import { CompatRouter } from 'react-router-dom-v5-compat';
 import PropTypes from 'prop-types';
 import { createMemoryHistory } from 'history';
 import configureStore from '../../ui/store/store';
@@ -45,18 +46,24 @@ const createProviderWrapper = (store, pathname = '/') => {
     store ? (
       <Provider store={store}>
         <Router history={history}>
-          <I18nProvider currentLocale="en" current={en} en={en}>
-            <LegacyI18nProvider>
-              <LegacyMetaMetricsProvider>{children}</LegacyMetaMetricsProvider>
-            </LegacyI18nProvider>
-          </I18nProvider>
+          <CompatRouter>
+            <I18nProvider currentLocale="en" current={en} en={en}>
+              <LegacyI18nProvider>
+                <LegacyMetaMetricsProvider>
+                  {children}
+                </LegacyMetaMetricsProvider>
+              </LegacyI18nProvider>
+            </I18nProvider>
+          </CompatRouter>
         </Router>
       </Provider>
     ) : (
       <Router history={history}>
-        <LegacyI18nProvider>
-          <LegacyMetaMetricsProvider>{children}</LegacyMetaMetricsProvider>
-        </LegacyI18nProvider>
+        <CompatRouter>
+          <LegacyI18nProvider>
+            <LegacyMetaMetricsProvider>{children}</LegacyMetaMetricsProvider>
+          </LegacyI18nProvider>
+        </CompatRouter>
       </Router>
     );
 
