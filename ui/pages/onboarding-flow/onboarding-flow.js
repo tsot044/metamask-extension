@@ -1,6 +1,10 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { Switch, useLocation } from 'react-router-dom';
-import { CompatRoute, useNavigate } from 'react-router-dom-v5-compat';
+import {
+  Routes,
+  Route,
+  useLocation,
+  useNavigate,
+} from 'react-router-dom-v5-compat';
 import { useDispatch, useSelector } from 'react-redux';
 import Unlock from '../unlock-page';
 import {
@@ -76,7 +80,7 @@ export default function OnboardingFlow() {
 
   useEffect(() => {
     if (completedOnboarding && !isFromReminder) {
-      navigate(DEFAULT_ROUTE);
+      // navigate(DEFAULT_ROUTE);
     }
   }, [navigate, completedOnboarding, isFromReminder]);
 
@@ -128,94 +132,83 @@ export default function OnboardingFlow() {
     <div className="onboarding-flow">
       <RevealSRPModal
         setSecretRecoveryPhrase={setSecretRecoveryPhrase}
-        onClose={() => navigate.push(DEFAULT_ROUTE)}
+        onClose={() => navigate(DEFAULT_ROUTE)}
         isOpen={showPasswordModalToAllowSRPReveal}
       />
       <div className="onboarding-flow__wrapper">
-        <Switch>
-          <CompatRoute
+        <Routes>
+          <Route
             path={ONBOARDING_CREATE_PASSWORD_ROUTE}
-            render={(routeProps) => (
+            element={
               <CreatePassword
-                {...routeProps}
                 createNewAccount={handleCreateNewAccount}
                 importWithRecoveryPhrase={handleImportWithRecoveryPhrase}
                 secretRecoveryPhrase={secretRecoveryPhrase}
               />
-            )}
+            }
           />
-          <CompatRoute
+          <Route
             path={ONBOARDING_SECURE_YOUR_WALLET_ROUTE}
-            component={SecureYourWallet}
+            element={<SecureYourWallet />}
           />
-          <CompatRoute
+          <Route
             path={ONBOARDING_REVIEW_SRP_ROUTE}
-            render={() => (
+            element={
               <ReviewRecoveryPhrase
                 secretRecoveryPhrase={secretRecoveryPhrase}
               />
-            )}
+            }
           />
-          <CompatRoute
+          <Route
             path={ONBOARDING_CONFIRM_SRP_ROUTE}
-            render={() => (
+            element={
               <ConfirmRecoveryPhrase
                 secretRecoveryPhrase={secretRecoveryPhrase}
               />
-            )}
+            }
           />
-          <CompatRoute
+          <Route
             path={ONBOARDING_IMPORT_WITH_SRP_ROUTE}
-            render={(routeProps) => (
-              <ImportSRP
-                {...routeProps}
-                submitSecretRecoveryPhrase={setSecretRecoveryPhrase}
-              />
-            )}
+            element={
+              <ImportSRP submitSecretRecoveryPhrase={setSecretRecoveryPhrase} />
+            }
           />
-          <CompatRoute
+          <Route
             path={ONBOARDING_UNLOCK_ROUTE}
-            render={(routeProps) => (
-              <Unlock {...routeProps} onSubmit={handleUnlock} />
-            )}
+            element={<Unlock onSubmit={handleUnlock} />}
           />
-          <CompatRoute
+          <Route
             path={ONBOARDING_PRIVACY_SETTINGS_ROUTE}
-            component={PrivacySettings}
+            element={<PrivacySettings />}
           />
-          <CompatRoute
+          <Route
             path={ONBOARDING_COMPLETION_ROUTE}
-            component={CreationSuccessful}
+            element={<CreationSuccessful />}
           />
-          <CompatRoute
+          <Route
             path={ONBOARDING_WELCOME_ROUTE}
-            component={OnboardingWelcome}
+            element={<OnboardingWelcome />}
           />
-          <CompatRoute
+          <Route
             path={ONBOARDING_PIN_EXTENSION_ROUTE}
-            component={OnboardingPinExtension}
+            element={<OnboardingPinExtension />}
           />
-          <CompatRoute
+          <Route
             path={ONBOARDING_METAMETRICS}
-            component={MetaMetricsComponent}
+            element={<MetaMetricsComponent />}
           />
           {
             ///: BEGIN:ONLY_INCLUDE_IF(build-flask)
           }
-          <CompatRoute
+          <Route
             path={ONBOARDING_EXPERIMENTAL_AREA}
-            render={(routeProps) => (
-              <ExperimentalArea
-                {...routeProps}
-                redirectTo={ONBOARDING_WELCOME_ROUTE}
-              />
-            )}
+            element={<ExperimentalArea redirectTo={ONBOARDING_WELCOME_ROUTE} />}
           />
           {
             ///: END:ONLY_INCLUDE_IF
           }
-          <CompatRoute exact path="*" component={OnboardingFlowSwitch} />
-        </Switch>
+          <Route path="*" element={<OnboardingFlowSwitch />} />
+        </Routes>
       </div>
       {pathname === ONBOARDING_COMPLETION_ROUTE && (
         <Button
