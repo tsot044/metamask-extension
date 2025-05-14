@@ -80,7 +80,7 @@ export default function OnboardingFlow() {
 
   useEffect(() => {
     if (completedOnboarding && !isFromReminder) {
-      // navigate(DEFAULT_ROUTE);
+      navigate(DEFAULT_ROUTE);
     }
   }, [navigate, completedOnboarding, isFromReminder]);
 
