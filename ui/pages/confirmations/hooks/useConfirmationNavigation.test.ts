@@ -1,9 +1,8 @@
-import { useHistory } from 'react-router-dom';
 import { ApprovalType } from '@metamask/controller-utils';
 import { Json } from '@metamask/utils';
 import { ApprovalFlowState } from '@metamask/approval-controller';
-import { renderHookWithProvider } from '../../../../test/lib/render-helpers';
 import { act } from '@testing-library/react';
+import { renderHookWithProvider } from '../../../../test/lib/render-helpers';
 import mockState from '../../../../test/data/mock-state.json';
 import {
   CONFIRM_ADD_SUGGESTED_NFT_ROUTE,
@@ -16,11 +15,6 @@ import {
   ENCRYPTION_PUBLIC_KEY_REQUEST_PATH,
 } from '../../../helpers/constants/routes';
 import { useConfirmationNavigation } from './useConfirmationNavigation';
-
-// jest.mock('react-router-dom', () => ({
-//   ...jest.requireActual('react-router-dom'),
-//   useHistory: jest.fn(),
-// }));
 
 jest.mock('../confirmation/templates', () => ({
   TEMPLATED_CONFIRMATION_APPROVAL_TYPES: ['wallet_addEthereumChain'],

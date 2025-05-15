@@ -25,15 +25,6 @@ jest.mock('react-redux', () => ({
   useDispatch: jest.fn(),
 }));
 
-const messageIdMock = '12345';
-
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useParams: () => ({
-    id: messageIdMock,
-  }),
-}));
-
 jest.mock('react', () => ({
   ...jest.requireActual('react'),
   useContext: jest.fn(),

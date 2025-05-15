@@ -4,13 +4,9 @@ import { render } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
 import userEvent from '@testing-library/user-event';
 import { Router } from 'react-router-dom';
-import {
-  // MemoryRouter,
-  CompatRouter,
-  useLocation,
-} from 'react-router-dom-v5-compat';
-import { createMemoryHistory } from 'history';
+import { CompatRouter } from 'react-router-dom-v5-compat';
 import PropTypes from 'prop-types';
+import { createMemoryHistory } from 'history';
 import configureStore from '../../ui/store/store';
 import { I18nContext, LegacyI18nProvider } from '../../ui/contexts/i18n';
 import { LegacyMetaMetricsProvider } from '../../ui/contexts/metametrics';
@@ -44,22 +40,7 @@ I18nProvider.defaultProps = {
   children: undefined,
 };
 
-function LocationReporter({ locationHolder }) {
-  // const location = useLocation();
-
-  // locationHolder.location = location;
-
-  return null;
-}
-
-LocationReporter.propTypes = {
-  locationHolder: PropTypes.shape({
-    location: PropTypes.object,
-  }).isRequired,
-};
-
 const createProviderWrapper = (store, pathname = '/') => {
-  const locationHolder = { location: {} };
   const history = createMemoryHistory({ initialEntries: [pathname] });
 
   const Wrapper = ({ children }) =>
@@ -67,7 +48,6 @@ const createProviderWrapper = (store, pathname = '/') => {
       <Provider store={store}>
         <Router history={history}>
           <CompatRouter>
-            <LocationReporter locationHolder={locationHolder} />
             <I18nProvider currentLocale="en" current={en} en={en}>
               <LegacyI18nProvider>
                 <LegacyMetaMetricsProvider>
@@ -103,17 +83,11 @@ export function renderWithProvider(
   pathname = '/',
   renderer = render,
 ) {
-  const { Wrapper, history } = createProviderWrapper(store, pathname);
-  // try {
+  const { history, Wrapper } = createProviderWrapper(store, pathname);
   return {
     ...renderer(component, { wrapper: Wrapper }),
     history,
   };
-  // } catch (error) {
-  //   console.log('Error rendering with provider:', error);
-  //   console.trace();
-  //   // throw error;
-  // }
 }
 
 export function renderHookWithProvider(hook, state, pathname = '/', Container) {

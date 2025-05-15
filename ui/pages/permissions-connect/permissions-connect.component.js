@@ -130,7 +130,7 @@ export default class PermissionConnect extends Component {
     snapsInstallPrivacyWarningShown: this.props.snapsInstallPrivacyWarningShown,
   };
 
-  /*componentDidMount() {
+  componentDidMount() {
     const {
       connectPath,
       confirmPermissionPath,
@@ -168,7 +168,7 @@ export default class PermissionConnect extends Component {
           history.replace(confirmPermissionPath);
       }
     }
-  }*/
+  }
 
   componentDidUpdate(prevProps) {
     const { permissionsRequest, lastConnectedInfo, targetSubjectMetadata } =

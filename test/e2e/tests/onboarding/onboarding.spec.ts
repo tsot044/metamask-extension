@@ -223,7 +223,7 @@ describe('MetaMask onboarding', function () {
     );
   });
 
-  it.only('User can add custom network during onboarding', async function () {
+  it('User can add custom network during onboarding', async function () {
     const networkName = 'Localhost 8546';
     const networkUrl = 'http://127.0.0.1:8546';
     const currencySymbol = 'ETH';
@@ -317,7 +317,7 @@ describe('MetaMask onboarding', function () {
         const homePage = new HomePage(driver);
         await homePage.check_pageIsLoaded();
         // check the basic functionality is off warning message is displayed
-        await homePage.check_basicFunctionalityOffWarnigMessageIsDisplayed();
+        await homePage.check_basicFunctionalityOffWarningMessageIsDisplayed();
       },
     );
   });
