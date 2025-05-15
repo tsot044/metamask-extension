@@ -261,6 +261,8 @@ describe('Onboarding Flow', () => {
       <OnboardingFlow />,
       store,
       ONBOARDING_PIN_EXTENSION_ROUTE,
+      undefined,
+      true,
     );
 
     const pinExtension = queryByTestId('onboarding-pin-extension');

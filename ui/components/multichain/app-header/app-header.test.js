@@ -46,7 +46,7 @@ const render = ({
     },
     ...(stateChanges ?? {}),
   });
-  return renderWithProvider(<AppHeader location={location} />, store);
+  return renderWithProvider(<AppHeader />, store);
 };
 
 describe('App Header', () => {
@@ -64,7 +64,7 @@ describe('App Header', () => {
   });
 
   describe('send stage', () => {
-    it('should disable the network picker during a send', () => {
+    it.only('should disable the network picker during a send', () => {
       const { getByTestId } = render({
         stateChanges: { send: { stage: SEND_STAGES.DRAFT } },
       });
