@@ -33,6 +33,7 @@ const render = ({
   location = {},
   isUnlocked = true,
 } = {}) => {
+  // console.log('locationlocationrender', location);
   const store = configureStore({
     ...mockState,
     metamask: {
@@ -46,7 +47,7 @@ const render = ({
     },
     ...(stateChanges ?? {}),
   });
-  return renderWithProvider(<AppHeader />, store);
+  return renderWithProvider(<AppHeader location={location} />, store);
 };
 
 describe('App Header', () => {
@@ -64,7 +65,7 @@ describe('App Header', () => {
   });
 
   describe('send stage', () => {
-    it.only('should disable the network picker during a send', () => {
+    it('should disable the network picker during a send', () => {
       const { getByTestId } = render({
         stateChanges: { send: { stage: SEND_STAGES.DRAFT } },
       });

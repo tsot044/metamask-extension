@@ -3,7 +3,6 @@ import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { matchPath } from 'react-router-dom';
-import { useLocation } from 'react-router-dom-v5-compat';
 import { MetaMetricsContext } from '../../../contexts/metametrics';
 import {
   MetaMetricsEventCategory,
@@ -38,9 +37,7 @@ import { AppHeaderContainer } from './app-header-container';
 import { AppHeaderUnlockedContent } from './app-header-unlocked-content';
 import { AppHeaderLockedContent } from './app-header-locked-content';
 
-export const AppHeader = () => {
-  const location = useLocation();
-  console.log('locationlocation', location);
+export const AppHeader = ({ location }) => {
   const trackEvent = useContext(MetaMetricsContext);
   const menuRef = useRef(null);
   const isUnlocked = useSelector(getIsUnlocked);
@@ -64,15 +61,14 @@ export const AppHeader = () => {
     SEND_STAGES.DRAFT,
     SEND_STAGES.ADD_RECIPIENT,
   ].includes(sendStage);
-
   const isConfirmationPage = Boolean(
-    matchPath(location.pathname, {
+    matchPath(location?.pathname, {
       path: CONFIRM_TRANSACTION_ROUTE,
       exact: false,
     }),
   );
   const isSwapsPage = Boolean(
-    matchPath(location.pathname, { path: SWAPS_ROUTE, exact: false }),
+    matchPath(location?.pathname, { path: SWAPS_ROUTE, exact: false }),
   );
 
   const unapprovedTransactions = useSelector(getUnapprovedTransactions);

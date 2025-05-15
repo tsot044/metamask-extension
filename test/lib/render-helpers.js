@@ -3,7 +3,7 @@ import { Provider } from 'react-redux';
 import { render } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
 import userEvent from '@testing-library/user-event';
-import { Router } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 import { CompatRouter } from 'react-router-dom-v5-compat';
 import PropTypes from 'prop-types';
 import { createMemoryHistory } from 'history';
@@ -41,15 +41,14 @@ I18nProvider.defaultProps = {
 };
 
 const createProviderWrapper = (store, pathname = '/', isRouterV6) => {
-  const CompatRouterIfV6 = isRouterV6
-    ? CompatRouter
-    : ({ children }) => <>{children}</>;
+  const CompatRouterIfV6 = 0 ? CompatRouter : ({ children }) => <>{children}</>;
 
   const history = createMemoryHistory({ initialEntries: [pathname] });
+  // console.log('historyhistory', JSON.stringify(history, null, 2));
   const Wrapper = ({ children }) =>
     store ? (
       <Provider store={store}>
-        <Router history={history}>
+        <MemoryRouter initialEntries={[pathname]}>
           <CompatRouterIfV6>
             <I18nProvider currentLocale="en" current={en} en={en}>
               <LegacyI18nProvider>
@@ -59,16 +58,16 @@ const createProviderWrapper = (store, pathname = '/', isRouterV6) => {
               </LegacyI18nProvider>
             </I18nProvider>
           </CompatRouterIfV6>
-        </Router>
+        </MemoryRouter>
       </Provider>
     ) : (
-      <Router history={history}>
+      <MemoryRouter initialEntries={[pathname]}>
         <CompatRouterIfV6>
           <LegacyI18nProvider>
             <LegacyMetaMetricsProvider>{children}</LegacyMetaMetricsProvider>
           </LegacyI18nProvider>
         </CompatRouterIfV6>
-      </Router>
+      </MemoryRouter>
     );
 
   Wrapper.propTypes = {
@@ -92,6 +91,8 @@ export function renderWithProvider(
     pathname,
     isRouterV6,
   );
+  // console.log('componentcomponent', component);
+  // console.log('Wrapper', Wrapper);
   return {
     ...renderer(component, { wrapper: Wrapper }),
     history,
