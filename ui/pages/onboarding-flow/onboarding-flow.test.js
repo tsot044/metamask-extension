@@ -105,12 +105,12 @@ describe('Onboarding Flow', () => {
       completedOnboardingState,
     );
 
-    const { locationHolder } = renderWithProvider(
+    const { history } = renderWithProvider(
       <OnboardingFlow />,
       completedOnboardingStore,
       '/other',
     );
-    expect(locationHolder.location.pathname).toStrictEqual(DEFAULT_ROUTE);
+    expect(history.location.pathname).toStrictEqual(DEFAULT_ROUTE);
   });
 
   describe('Create Password', () => {

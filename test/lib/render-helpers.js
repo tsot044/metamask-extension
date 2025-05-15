@@ -3,8 +3,13 @@ import { Provider } from 'react-redux';
 import { render } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
 import userEvent from '@testing-library/user-event';
-import { MemoryRouter } from 'react-router-dom';
-import { CompatRouter, useLocation } from 'react-router-dom-v5-compat';
+import { Router } from 'react-router-dom';
+import {
+  // MemoryRouter,
+  CompatRouter,
+  useLocation,
+} from 'react-router-dom-v5-compat';
+import { createMemoryHistory } from 'history';
 import PropTypes from 'prop-types';
 import configureStore from '../../ui/store/store';
 import { I18nContext, LegacyI18nProvider } from '../../ui/contexts/i18n';
@@ -40,9 +45,9 @@ I18nProvider.defaultProps = {
 };
 
 function LocationReporter({ locationHolder }) {
-  const location = useLocation();
+  // const location = useLocation();
 
-  locationHolder.location = location;
+  // locationHolder.location = location;
 
   return null;
 }
@@ -55,11 +60,12 @@ LocationReporter.propTypes = {
 
 const createProviderWrapper = (store, pathname = '/') => {
   const locationHolder = { location: {} };
+  const history = createMemoryHistory({ initialEntries: [pathname] });
 
   const Wrapper = ({ children }) =>
     store ? (
       <Provider store={store}>
-        <MemoryRouter initialEntries={[pathname]}>
+        <Router history={history}>
           <CompatRouter>
             <LocationReporter locationHolder={locationHolder} />
             <I18nProvider currentLocale="en" current={en} en={en}>
@@ -70,16 +76,16 @@ const createProviderWrapper = (store, pathname = '/') => {
               </LegacyI18nProvider>
             </I18nProvider>
           </CompatRouter>
-        </MemoryRouter>
+        </Router>
       </Provider>
     ) : (
-      <MemoryRouter initialEntries={[pathname]}>
+      <Router history={history}>
         <CompatRouter>
           <LegacyI18nProvider>
             <LegacyMetaMetricsProvider>{children}</LegacyMetaMetricsProvider>
           </LegacyI18nProvider>
         </CompatRouter>
-      </MemoryRouter>
+      </Router>
     );
 
   Wrapper.propTypes = {
@@ -87,7 +93,7 @@ const createProviderWrapper = (store, pathname = '/') => {
   };
   return {
     Wrapper,
-    locationHolder,
+    history,
   };
 };
 
@@ -97,11 +103,11 @@ export function renderWithProvider(
   pathname = '/',
   renderer = render,
 ) {
-  const { Wrapper, locationHolder } = createProviderWrapper(store, pathname);
+  const { Wrapper, history } = createProviderWrapper(store, pathname);
   // try {
   return {
     ...renderer(component, { wrapper: Wrapper }),
-    locationHolder,
+    history,
   };
   // } catch (error) {
   //   console.log('Error rendering with provider:', error);
