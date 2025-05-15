@@ -41,15 +41,12 @@ I18nProvider.defaultProps = {
 };
 
 const createProviderWrapper = (store, pathname = '/', isRouterV6) => {
-  const CompatRouterIfV6 = 0 ? CompatRouter : ({ children }) => <>{children}</>;
-
   const history = createMemoryHistory({ initialEntries: [pathname] });
-  // console.log('historyhistory', JSON.stringify(history, null, 2));
   const Wrapper = ({ children }) =>
     store ? (
       <Provider store={store}>
         <MemoryRouter initialEntries={[pathname]}>
-          <CompatRouterIfV6>
+          <CompatRouter>
             <I18nProvider currentLocale="en" current={en} en={en}>
               <LegacyI18nProvider>
                 <LegacyMetaMetricsProvider>
@@ -57,16 +54,16 @@ const createProviderWrapper = (store, pathname = '/', isRouterV6) => {
                 </LegacyMetaMetricsProvider>
               </LegacyI18nProvider>
             </I18nProvider>
-          </CompatRouterIfV6>
+          </CompatRouter>
         </MemoryRouter>
       </Provider>
     ) : (
       <MemoryRouter initialEntries={[pathname]}>
-        <CompatRouterIfV6>
+        <CompatRouter>
           <LegacyI18nProvider>
             <LegacyMetaMetricsProvider>{children}</LegacyMetaMetricsProvider>
           </LegacyI18nProvider>
-        </CompatRouterIfV6>
+        </CompatRouter>
       </MemoryRouter>
     );
 
@@ -84,15 +81,8 @@ export function renderWithProvider(
   store,
   pathname = '/',
   renderer = render,
-  isRouterV6 = true,
 ) {
-  const { history, Wrapper } = createProviderWrapper(
-    store,
-    pathname,
-    isRouterV6,
-  );
-  // console.log('componentcomponent', component);
-  // console.log('Wrapper', Wrapper);
+  const { history, Wrapper } = createProviderWrapper(store, pathname);
   return {
     ...renderer(component, { wrapper: Wrapper }),
     history,
