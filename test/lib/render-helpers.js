@@ -4,7 +4,7 @@ import { render } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
-import { CompatRouter } from 'react-router-dom-v5-compat';
+import { CompatRouter, useLocation } from 'react-router-dom-v5-compat';
 import PropTypes from 'prop-types';
 import { createMemoryHistory } from 'history';
 import configureStore from '../../ui/store/store';
@@ -40,13 +40,23 @@ I18nProvider.defaultProps = {
   children: undefined,
 };
 
+function LocationReporter({ locationHolder }) {
+  const location = useLocation();
+
+  locationHolder.location = location;
+
+  return null;
+}
+
 const createProviderWrapper = (store, pathname = '/', isRouterV6) => {
-  const history = createMemoryHistory({ initialEntries: [pathname] });
+  let locationHolder = { location: {} };
+
   const Wrapper = ({ children }) =>
     store ? (
       <Provider store={store}>
         <MemoryRouter initialEntries={[pathname]}>
           <CompatRouter>
+            <LocationReporter locationHolder={locationHolder} />
             <I18nProvider currentLocale="en" current={en} en={en}>
               <LegacyI18nProvider>
                 <LegacyMetaMetricsProvider>
@@ -72,7 +82,7 @@ const createProviderWrapper = (store, pathname = '/', isRouterV6) => {
   };
   return {
     Wrapper,
-    history,
+    locationHolder,
   };
 };
 
@@ -82,10 +92,10 @@ export function renderWithProvider(
   pathname = '/',
   renderer = render,
 ) {
-  const { history, Wrapper } = createProviderWrapper(store, pathname);
+  const { Wrapper, locationHolder } = createProviderWrapper(store, pathname);
   return {
     ...renderer(component, { wrapper: Wrapper }),
-    history,
+    locationHolder,
   };
 }
 
