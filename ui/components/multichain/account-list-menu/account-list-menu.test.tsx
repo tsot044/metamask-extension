@@ -47,11 +47,6 @@ jest.mock('../../../store/actions', () => {
   };
 });
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useHistory: jest.fn(() => []),
-}));
-
 jest.mock('../../../hooks/accounts/useMultichainWalletSnapClient', () => ({
   ...jest.requireActual(
     '../../../hooks/accounts/useMultichainWalletSnapClient',
@@ -134,15 +129,6 @@ const render = (
 };
 
 describe('AccountListMenu', () => {
-  const historyPushMock = jest.fn();
-
-  beforeEach(() => {
-    jest
-      .spyOn(reactRouterDom, 'useHistory')
-      .mockImplementation()
-      .mockReturnValue({ push: historyPushMock });
-  });
-
   afterEach(() => {
     jest.resetAllMocks();
     jest.clearAllMocks();
@@ -346,13 +332,13 @@ describe('AccountListMenu', () => {
   });
 
   it('navigates to hardware wallet connection screen when clicked', () => {
-    const { getByText, getByTestId } = render();
+    const { getByText, getByTestId, history } = render();
 
     const button = getByTestId('multichain-account-menu-popover-action-button');
     button.click();
 
     fireEvent.click(getByText('Hardware wallet'));
-    expect(historyPushMock).toHaveBeenCalledWith(CONNECT_HARDWARE_ROUTE);
+    expect(history.location.pathname).toBe(CONNECT_HARDWARE_ROUTE);
   });
 
   ///: BEGIN:ONLY_INCLUDE_IF(keyring-snaps)
@@ -626,7 +612,7 @@ describe('AccountListMenu', () => {
     // Skipping this test for now, since the flow has changed a bit when multi-SRP is enabled (and we have no way
     // to disable it "programmatically" in the test)
     it.skip('redirects the user to the approval after clicking create account in the settings page', async () => {
-      const { getByText, getByTestId } = render(
+      const { getByText, getByTestId, history } = render(
         undefined,
         undefined,
         '/settings',
@@ -645,7 +631,7 @@ describe('AccountListMenu', () => {
       const addBtcAccountButton = getByTestId('submit-add-account-with-name');
       addBtcAccountButton.click();
 
-      expect(historyPushMock).toHaveBeenCalledWith(CONFIRMATION_V_NEXT_ROUTE);
+      expect(history.location.pathname).toBe(CONFIRMATION_V_NEXT_ROUTE);
       expect(mockBitcoinClientCreateAccount).toHaveBeenCalled();
     });
   });
