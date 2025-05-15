@@ -3,6 +3,7 @@ import { ApprovalType } from '@metamask/controller-utils';
 import { Json } from '@metamask/utils';
 import { ApprovalFlowState } from '@metamask/approval-controller';
 import { renderHookWithProvider } from '../../../../test/lib/render-helpers';
+import { act } from '@testing-library/react';
 import mockState from '../../../../test/data/mock-state.json';
 import {
   CONFIRM_ADD_SUGGESTED_NFT_ROUTE,
@@ -11,14 +12,15 @@ import {
   CONFIRMATION_V_NEXT_ROUTE,
   CONNECT_ROUTE,
   DECRYPT_MESSAGE_REQUEST_PATH,
+  DEFAULT_ROUTE,
   ENCRYPTION_PUBLIC_KEY_REQUEST_PATH,
 } from '../../../helpers/constants/routes';
 import { useConfirmationNavigation } from './useConfirmationNavigation';
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useHistory: jest.fn(),
-}));
+// jest.mock('react-router-dom', () => ({
+//   ...jest.requireActual('react-router-dom'),
+//   useHistory: jest.fn(),
+// }));
 
 jest.mock('../confirmation/templates', () => ({
   TEMPLATED_CONFIRMATION_APPROVAL_TYPES: ['wallet_addEthereumChain'],
@@ -28,15 +30,18 @@ const APPROVAL_ID_MOCK = '123-456';
 const APPROVAL_ID_2_MOCK = '456-789';
 
 function renderHookWithState(state: Record<string, unknown>) {
-  const { result } = renderHookWithProvider(() => useConfirmationNavigation(), {
-    ...mockState,
-    metamask: {
-      ...mockState.metamask,
-      ...state,
+  const { result, history } = renderHookWithProvider(
+    () => useConfirmationNavigation(),
+    {
+      ...mockState,
+      metamask: {
+        ...mockState.metamask,
+        ...state,
+      },
     },
-  });
+  );
 
-  return result.current;
+  return { result: result.current, history };
 }
 
 function renderHook(
@@ -62,143 +67,156 @@ function renderHook(
 }
 
 describe('useConfirmationNavigation', () => {
-  const useHistoryMock = jest.mocked(useHistory);
-  const history = { replace: jest.fn() };
+  // const useHistoryMock = jest.mocked(useHistory);
+  // const history = { replace: jest.fn() };
 
   beforeEach(() => {
     jest.resetAllMocks();
-    useHistoryMock.mockReturnValue(history);
+    // useHistoryMock.mockReturnValue(history);
   });
 
   describe('navigateToId', () => {
     it('navigates to transaction route', () => {
-      const result = renderHook(ApprovalType.Transaction);
+      // let bips;
 
-      result.navigateToId(APPROVAL_ID_MOCK);
+      // bips = act(() => renderHook(ApprovalType.Transaction));
+      // console.log('bips', bips);
 
-      expect(history.replace).toHaveBeenCalledTimes(1);
-      expect(history.replace).toHaveBeenCalledWith(
+      const { result, history } = renderHook(ApprovalType.Transaction);
+
+      // const = await renderHook(ApprovalType.Transaction);
+
+      act(() => result.navigateToId(APPROVAL_ID_MOCK));
+
+      expect(history.action).toBe('REPLACE');
+      expect(history.location.pathname).toBe(
         `${CONFIRM_TRANSACTION_ROUTE}/${APPROVAL_ID_MOCK}`,
       );
     });
 
     it('navigates to template route', () => {
-      const result = renderHook(ApprovalType.AddEthereumChain);
+      const { result, history } = renderHook(ApprovalType.AddEthereumChain);
 
-      result.navigateToId(APPROVAL_ID_MOCK);
+      act(() => result.navigateToId(APPROVAL_ID_MOCK));
 
-      expect(history.replace).toHaveBeenCalledTimes(1);
-      expect(history.replace).toHaveBeenCalledWith(
+      expect(history.action).toBe('REPLACE');
+      expect(history.location.pathname).toBe(
         `${CONFIRMATION_V_NEXT_ROUTE}/${APPROVAL_ID_MOCK}`,
       );
     });
 
     it('navigates to template route if approval flow', () => {
-      const result = renderHook(undefined as never, undefined, [{} as never]);
-
-      result.navigateToId(undefined);
-
-      expect(history.replace).toHaveBeenCalledTimes(1);
-      expect(history.replace).toHaveBeenCalledWith(
-        `${CONFIRMATION_V_NEXT_ROUTE}`,
-      );
-    });
-
-    it('does not navigate to template route if approval flow and pending approval', () => {
-      const result = renderHook(ApprovalType.Transaction, undefined, [
+      const { result, history } = renderHook(undefined as never, undefined, [
         {} as never,
       ]);
 
-      result.navigateToId(APPROVAL_ID_MOCK);
+      act(() => result.navigateToId(undefined));
 
-      expect(history.replace).toHaveBeenCalledTimes(1);
-      expect(history.replace).toHaveBeenCalledWith(
+      expect(history.action).toBe('REPLACE');
+      expect(history.location.pathname).toBe(`${CONFIRMATION_V_NEXT_ROUTE}`);
+    });
+
+    it('does not navigate to template route if approval flow and pending approval', () => {
+      const { result, history } = renderHook(
+        ApprovalType.Transaction,
+        undefined,
+        [{} as never],
+      );
+
+      act(() => result.navigateToId(APPROVAL_ID_MOCK));
+
+      expect(history.action).toBe('REPLACE');
+      expect(history.location.pathname).toBe(
         `${CONFIRM_TRANSACTION_ROUTE}/${APPROVAL_ID_MOCK}`,
       );
     });
 
     it('navigates to connect route', () => {
-      const result = renderHook(ApprovalType.WalletRequestPermissions);
+      const { result, history } = renderHook(
+        ApprovalType.WalletRequestPermissions,
+      );
 
-      result.navigateToId(APPROVAL_ID_MOCK);
+      act(() => result.navigateToId(APPROVAL_ID_MOCK));
 
-      expect(history.replace).toHaveBeenCalledTimes(1);
-      expect(history.replace).toHaveBeenCalledWith(
+      expect(history.action).toBe('REPLACE');
+      expect(history.location.pathname).toBe(
         `${CONNECT_ROUTE}/${APPROVAL_ID_MOCK}`,
       );
     });
 
     it('navigates to add token route if no token ID', () => {
-      const result = renderHook(ApprovalType.WatchAsset);
+      const { result, history } = renderHook(ApprovalType.WatchAsset);
 
-      result.navigateToId(APPROVAL_ID_MOCK);
+      act(() => result.navigateToId(APPROVAL_ID_MOCK));
 
-      expect(history.replace).toHaveBeenCalledTimes(1);
-      expect(history.replace).toHaveBeenCalledWith(
+      expect(history.action).toBe('REPLACE');
+      expect(history.location.pathname).toBe(
         `${CONFIRM_ADD_SUGGESTED_TOKEN_ROUTE}`,
       );
     });
 
     it('navigates to add NFT route if token ID', () => {
-      const result = renderHook(ApprovalType.WatchAsset, {
+      const { result, history } = renderHook(ApprovalType.WatchAsset, {
         asset: { tokenId: '123' },
       });
 
-      result.navigateToId(APPROVAL_ID_MOCK);
+      act(() => result.navigateToId(APPROVAL_ID_MOCK));
 
-      expect(history.replace).toHaveBeenCalledTimes(1);
-      expect(history.replace).toHaveBeenCalledWith(
+      expect(history.action).toBe('REPLACE');
+      expect(history.location.pathname).toBe(
         `${CONFIRM_ADD_SUGGESTED_NFT_ROUTE}`,
       );
     });
 
     it('navigates to encrypt route', () => {
-      const result = renderHook(ApprovalType.EthGetEncryptionPublicKey);
+      const { result, history } = renderHook(
+        ApprovalType.EthGetEncryptionPublicKey,
+      );
 
-      result.navigateToId(APPROVAL_ID_MOCK);
+      act(() => result.navigateToId(APPROVAL_ID_MOCK));
 
-      expect(history.replace).toHaveBeenCalledTimes(1);
-      expect(history.replace).toHaveBeenCalledWith(
+      expect(history.action).toBe('REPLACE');
+      expect(history.location.pathname).toBe(
         `${CONFIRM_TRANSACTION_ROUTE}/${APPROVAL_ID_MOCK}${ENCRYPTION_PUBLIC_KEY_REQUEST_PATH}`,
       );
     });
 
     it('navigates to decrypt route', () => {
-      const result = renderHook(ApprovalType.EthDecrypt);
+      const { result, history } = renderHook(ApprovalType.EthDecrypt);
 
-      result.navigateToId(APPROVAL_ID_MOCK);
+      act(() => result.navigateToId(APPROVAL_ID_MOCK));
 
-      expect(history.replace).toHaveBeenCalledTimes(1);
-      expect(history.replace).toHaveBeenCalledWith(
+      expect(history.action).toBe('REPLACE');
+      expect(history.location.pathname).toBe(
         `${CONFIRM_TRANSACTION_ROUTE}/${APPROVAL_ID_MOCK}${DECRYPT_MESSAGE_REQUEST_PATH}`,
       );
     });
 
     it('does not navigate if no matching confirmation found', () => {
-      const result = renderHook(ApprovalType.AddEthereumChain);
+      const { result, history } = renderHook(ApprovalType.AddEthereumChain);
 
-      result.navigateToId('invalidId');
+      act(() => result.navigateToId('invalidId'));
 
-      expect(history.replace).toHaveBeenCalledTimes(0);
+      expect(history.location.pathname).toBe(DEFAULT_ROUTE);
     });
 
     it('does not navigate if no confirmation ID provided', () => {
-      const result = renderHook(ApprovalType.AddEthereumChain);
+      const { result, history } = renderHook(ApprovalType.AddEthereumChain);
 
-      result.navigateToId();
+      act(() => result.navigateToId());
 
-      expect(history.replace).toHaveBeenCalledTimes(0);
+      expect(history.location.pathname).toBe(DEFAULT_ROUTE);
     });
   });
 
   describe('navigateToIndex', () => {
     it('navigates to the confirmation at the given index', () => {
-      const result = renderHook(ApprovalType.Transaction);
+      const { result, history } = renderHook(ApprovalType.Transaction);
 
-      result.navigateToIndex(1);
+      act(() => result.navigateToIndex(1));
 
-      expect(history.replace).toHaveBeenCalledTimes(1);
-      expect(history.replace).toHaveBeenCalledWith(
+      expect(history.action).toBe('REPLACE');
+      expect(history.location.pathname).toBe(
         `${CONFIRM_TRANSACTION_ROUTE}/${APPROVAL_ID_2_MOCK}`,
       );
     });
@@ -206,7 +224,9 @@ describe('useConfirmationNavigation', () => {
 
   describe('count', () => {
     it('returns the number of confirmations', () => {
-      const result = renderHook(ApprovalType.Transaction);
+      const { result } = renderHook(ApprovalType.Transaction);
+
+      console.log('result', result);
       expect(result.count).toBe(2);
     });
 
@@ -217,7 +237,7 @@ describe('useConfirmationNavigation', () => {
     ])(
       'ignores additional watch %s approvals',
       (_title: string, tokenId?: string) => {
-        const result = renderHookWithState({
+        const { result } = renderHookWithState({
           pendingApprovals: {
             [APPROVAL_ID_MOCK]: {
               id: APPROVAL_ID_MOCK,
@@ -243,19 +263,19 @@ describe('useConfirmationNavigation', () => {
 
   describe('getIndex', () => {
     it('returns the index of the given confirmation', () => {
-      const result = renderHook(ApprovalType.Transaction);
+      const { result } = renderHook(ApprovalType.Transaction);
       expect(result.getIndex(APPROVAL_ID_2_MOCK)).toBe(1);
     });
 
     it('returns 0 if no confirmation ID is provided', () => {
-      const result = renderHook(ApprovalType.Transaction);
+      const { result } = renderHook(ApprovalType.Transaction);
       expect(result.getIndex()).toBe(0);
     });
   });
 
   describe('confirmations', () => {
     it('returns the list of confirmations', () => {
-      const result = renderHook(ApprovalType.Transaction);
+      const { result } = renderHook(ApprovalType.Transaction);
       expect(result.confirmations.map(({ id }: { id: string }) => id)).toEqual([
         APPROVAL_ID_MOCK,
         APPROVAL_ID_2_MOCK,
@@ -269,7 +289,7 @@ describe('useConfirmationNavigation', () => {
     ])(
       'ignores additional watch %s approvals',
       (_title: string, tokenId?: string) => {
-        const result = renderHookWithState({
+        const { result } = renderHookWithState({
           pendingApprovals: {
             [APPROVAL_ID_MOCK]: {
               id: APPROVAL_ID_MOCK,
