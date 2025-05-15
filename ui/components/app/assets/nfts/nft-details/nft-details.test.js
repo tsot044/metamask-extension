@@ -33,13 +33,8 @@ jest.mock('../../../../../helpers/utils/util', () => ({
 
 jest.mock('copy-to-clipboard');
 
-const mockHistoryPush = jest.fn();
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
-  useLocation: jest.fn(() => ({ search: '' })),
-  useHistory: () => ({
-    push: mockHistoryPush,
-  }),
   useParams: jest.fn(),
 }));
 
@@ -92,7 +87,7 @@ describe('NFT Details', () => {
 
   it(`should route to '/' route when the back button is clicked`, () => {
     useParams.mockReturnValue({ chainId: CHAIN_IDS.MAINNET });
-    const { queryByTestId } = renderWithProvider(
+    const { queryByTestId, history } = renderWithProvider(
       <NftDetails {...props} />,
       mockStore,
     );
@@ -101,12 +96,12 @@ describe('NFT Details', () => {
 
     fireEvent.click(backButton);
 
-    expect(mockHistoryPush).toHaveBeenCalledWith(DEFAULT_ROUTE);
+    expect(history.location.pathname).toBe(DEFAULT_ROUTE);
   });
 
   it(`should call removeAndIgnoreNFT with proper nft details and route to '/' when removing nft`, async () => {
     useParams.mockReturnValue({ chainId: CHAIN_IDS.MAINNET });
-    const { queryByTestId } = renderWithProvider(
+    const { queryByTestId, history } = renderWithProvider(
       <NftDetails {...props} />,
       mockStore,
     );
@@ -124,12 +119,12 @@ describe('NFT Details', () => {
       'testNetworkConfigurationId',
     );
     expect(setRemoveNftMessage).toHaveBeenCalledWith('success');
-    expect(mockHistoryPush).toHaveBeenCalledWith(DEFAULT_ROUTE);
+    expect(history.location.pathname).toBe(DEFAULT_ROUTE);
   });
 
   it(`should call setRemoveNftMessage with error when removeAndIgnoreNft fails and route to '/'`, async () => {
     useParams.mockReturnValue({ chainId: CHAIN_IDS.MAINNET });
-    const { queryByTestId } = renderWithProvider(
+    const { queryByTestId, history } = renderWithProvider(
       <NftDetails {...props} />,
       mockStore,
     );
@@ -149,7 +144,7 @@ describe('NFT Details', () => {
       'testNetworkConfigurationId',
     );
     expect(setRemoveNftMessage).toHaveBeenCalledWith('error');
-    expect(mockHistoryPush).toHaveBeenCalledWith(DEFAULT_ROUTE);
+    expect(history.location.pathname).toBe(DEFAULT_ROUTE);
   });
 
   it('should copy nft address', async () => {
@@ -171,7 +166,7 @@ describe('NFT Details', () => {
       nft: nfts[5],
     };
     nfts[5].isCurrentlyOwned = true;
-    const { queryByTestId } = renderWithProvider(
+    const { queryByTestId, history } = renderWithProvider(
       <NftDetails {...nftProps} />,
       mockStore,
     );
@@ -185,7 +180,7 @@ describe('NFT Details', () => {
         details: { ...nfts[5], tokenId: '1' },
       });
 
-      expect(mockHistoryPush).toHaveBeenCalledWith(SEND_ROUTE);
+      expect(history.location.pathname).toBe(SEND_ROUTE);
     });
   });
 

@@ -19,14 +19,6 @@ jest.mock('../../../../app/scripts/lib/util', () => ({
   getEnvironmentType: jest.fn(),
 }));
 
-const mockUseHistory = jest.fn();
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useHistory: () => ({
-    push: mockUseHistory,
-  }),
-}));
-
 const render = ({
   stateChanges = {},
   network = { chainId: '0x5', nickname: 'Chain 5', ticker: 'ETH' },
@@ -129,14 +121,15 @@ describe('App Header', () => {
 
     it('can open the dapp connection', () => {
       getEnvironmentType.mockReturnValue(ENVIRONMENT_TYPE_POPUP);
-      const { container } = render();
+      const { container, history } = render();
+
       const connectionPickerButton = container.querySelector(
         '[data-testid="connection-menu"]',
       );
       expect(connectionPickerButton).toBeInTheDocument();
       fireEvent.click(connectionPickerButton);
 
-      expect(mockUseHistory).toHaveBeenCalled();
+      expect(history.index).toBe(1);
     });
   });
 
