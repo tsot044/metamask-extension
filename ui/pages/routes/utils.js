@@ -51,6 +51,7 @@ export function setTheme(theme) {
 }
 
 function onConfirmPage(props) {
+  console.trace('dipsy');
   const { location } = props;
   return Boolean(
     matchPath(location.pathname, {
@@ -61,6 +62,7 @@ function onConfirmPage(props) {
 }
 
 function onInitializationUnlockPage(props) {
+  console.trace('dipsy');
   const { location } = props;
   return Boolean(
     matchPath(location.pathname, {
@@ -71,6 +73,7 @@ function onInitializationUnlockPage(props) {
 }
 
 export function showOnboardingHeader(location) {
+  console.trace('dipsy');
   return Boolean(
     matchPath(location.pathname, {
       path: ONBOARDING_ROUTE,
@@ -105,6 +108,7 @@ export function getConnectingLabel(loadingMessage, props, context) {
 }
 
 export function hideAppHeader(props) {
+  console.trace('dipsy');
   const { location } = props;
 
   const isNotificationsPage = Boolean(
@@ -119,10 +123,11 @@ export function hideAppHeader(props) {
   }
 
   const isInitializing = Boolean(
-    matchPath(location.pathname, {
-      path: ONBOARDING_ROUTE,
-      exact: false,
-    }),
+    console.trace('dipsy') &&
+      matchPath(location.pathname, {
+        path: ONBOARDING_ROUTE,
+        exact: false,
+      }),
   );
 
   if (isInitializing && !onInitializationUnlockPage(props)) {
@@ -136,10 +141,11 @@ export function hideAppHeader(props) {
   }
 
   const isPermissionsPage = Boolean(
-    matchPath(location.pathname, {
-      path: PERMISSIONS,
-      exact: false,
-    }),
+    console.trace('dipsy') &&
+      matchPath(location.pathname, {
+        path: PERMISSIONS,
+        exact: false,
+      }),
   );
 
   if (isPermissionsPage) {
@@ -147,24 +153,26 @@ export function hideAppHeader(props) {
   }
 
   const isConnectionsPage = Boolean(
-    matchPath(location.pathname, {
-      path: CONNECTIONS,
-      exact: false,
-    }),
+    console.trace('dipsy') &&
+      matchPath(location.pathname, {
+        path: CONNECTIONS,
+        exact: false,
+      }),
   );
 
   if (isConnectionsPage) {
     return true;
   }
 
-  const isReviewPermissionsPgae = Boolean(
-    matchPath(location.pathname, {
-      path: REVIEW_PERMISSIONS,
-      exact: false,
-    }),
+  const isReviewPermissionsPage = Boolean(
+    console.trace('dipsy') &&
+      matchPath(location.pathname, {
+        path: REVIEW_PERMISSIONS,
+        exact: false,
+      }),
   );
 
-  if (isReviewPermissionsPgae) {
+  if (isReviewPermissionsPage) {
     return true;
   }
 
@@ -173,47 +181,52 @@ export function hideAppHeader(props) {
   }
 
   const isHandlingPermissionsRequest = Boolean(
-    matchPath(location.pathname, {
-      path: CONNECT_ROUTE,
-      exact: false,
-    }),
+    console.trace('dipsy') &&
+      matchPath(location.pathname, {
+        path: CONNECT_ROUTE,
+        exact: false,
+      }),
   );
 
   const isMultichainSend = Boolean(
-    matchPath(location.pathname, {
-      path: SEND_ROUTE,
-      exact: false,
-    }),
+    console.trace('dipsy') &&
+      matchPath(location.pathname, {
+        path: SEND_ROUTE,
+        exact: false,
+      }),
   );
   if (isMultichainSend) {
     return true;
   }
 
   const isSnapsHome = Boolean(
-    matchPath(location.pathname, {
-      path: SNAPS_VIEW_ROUTE,
-      exact: false,
-    }),
+    console.trace('dipsy') &&
+      matchPath(location.pathname, {
+        path: SNAPS_VIEW_ROUTE,
+        exact: false,
+      }),
   );
   if (isSnapsHome) {
     return true;
   }
 
   const isCrossChainSwapsPage = Boolean(
-    matchPath(location.pathname, {
-      path: `${CROSS_CHAIN_SWAP_ROUTE}`,
-      exact: false,
-    }),
+    console.trace('dipsy') &&
+      matchPath(location.pathname, {
+        path: `${CROSS_CHAIN_SWAP_ROUTE}`,
+        exact: false,
+      }),
   );
   if (isCrossChainSwapsPage) {
     return true;
   }
 
   const isAssetsPage = Boolean(
-    matchPath(location.pathname, {
-      path: ASSET_ROUTE,
-      exact: false,
-    }),
+    console.trace('dipsy') &&
+      matchPath(location.pathname, {
+        path: ASSET_ROUTE,
+        exact: false,
+      }),
   );
 
   if (isAssetsPage) {
@@ -221,11 +234,14 @@ export function hideAppHeader(props) {
   }
 
   const isHandlingAddEthereumChainRequest = Boolean(
-    matchPath(location.pathname, {
-      path: CONFIRMATION_V_NEXT_ROUTE,
-      exact: false,
-    }),
+    console.trace('dipsy') &&
+      matchPath(location.pathname, {
+        path: CONFIRMATION_V_NEXT_ROUTE,
+        exact: false,
+      }),
   );
+
+  console.trace('dipsy');
 
   return (
     isHandlingPermissionsRequest ||
@@ -236,6 +252,7 @@ export function hideAppHeader(props) {
 
 export function showAppHeader(props) {
   const { location } = props;
+  console.trace('dipsy');
   return Boolean(
     matchPath(location.pathname, {
       path: DEFAULT_ROUTE,

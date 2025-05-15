@@ -6,7 +6,6 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { CompatRouter, useLocation } from 'react-router-dom-v5-compat';
 import PropTypes from 'prop-types';
-import { createMemoryHistory } from 'history';
 import configureStore from '../../ui/store/store';
 import { I18nContext, LegacyI18nProvider } from '../../ui/contexts/i18n';
 import { LegacyMetaMetricsProvider } from '../../ui/contexts/metametrics';
@@ -48,8 +47,14 @@ function LocationReporter({ locationHolder }) {
   return null;
 }
 
-const createProviderWrapper = (store, pathname = '/', isRouterV6) => {
-  let locationHolder = { location: {} };
+LocationReporter.propTypes = {
+  locationHolder: PropTypes.shape({
+    location: PropTypes.object,
+  }).isRequired,
+};
+
+const createProviderWrapper = (store, pathname = '/') => {
+  const locationHolder = { location: {} };
 
   const Wrapper = ({ children }) =>
     store ? (
@@ -93,10 +98,16 @@ export function renderWithProvider(
   renderer = render,
 ) {
   const { Wrapper, locationHolder } = createProviderWrapper(store, pathname);
+  // try {
   return {
     ...renderer(component, { wrapper: Wrapper }),
     locationHolder,
   };
+  // } catch (error) {
+  //   console.log('Error rendering with provider:', error);
+  //   console.trace();
+  //   // throw error;
+  // }
 }
 
 export function renderHookWithProvider(hook, state, pathname = '/', Container) {

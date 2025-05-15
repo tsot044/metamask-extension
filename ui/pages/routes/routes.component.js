@@ -274,11 +274,11 @@ export default class Routes extends Component {
       setCurrentCurrencyToUSD();
     }
 
-    history.listen((locationObj, action) => {
-      if (action === 'PUSH') {
-        pageChanged(locationObj.pathname);
-      }
-    });
+    // history.listen((locationObj, action) => {
+    //   if (action === 'PUSH') {
+    //     pageChanged(locationObj.pathname);
+    //   }
+    // });
 
     setTheme(this.props.theme);
   }
