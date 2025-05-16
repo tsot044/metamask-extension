@@ -1,3 +1,4 @@
+//bbi
 import React from 'react';
 import configureMockStore from 'redux-mock-store';
 import { fireEvent, waitFor } from '@testing-library/react';
@@ -16,19 +17,6 @@ import {
 } from '../../../store/actions';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
 import OnboardingMetametrics from './metametrics';
-
-const mockPushHistory = jest.fn();
-
-jest.mock('react-router-dom', () => {
-  const original = jest.requireActual('react-router-dom');
-  return {
-    ...original,
-    useLocation: jest.fn(() => ({ search: '' })),
-    useHistory: () => ({
-      push: mockPushHistory,
-    }),
-  };
-});
 
 jest.mock('../../../store/actions.ts', () => ({
   setParticipateInMetaMetrics: jest
@@ -81,7 +69,7 @@ describe('Onboarding Metametrics Component', () => {
   });
 
   it('should set setParticipateInMetaMetrics to true when clicking agree', async () => {
-    const { queryByText } = renderWithProvider(
+    const { queryByText, history } = renderWithProvider(
       <OnboardingMetametrics />,
       mockStore,
     );
@@ -92,14 +80,12 @@ describe('Onboarding Metametrics Component', () => {
 
     await waitFor(() => {
       expect(setParticipateInMetaMetrics).toHaveBeenCalledWith(true);
-      expect(mockPushHistory).toHaveBeenCalledWith(
-        ONBOARDING_CREATE_PASSWORD_ROUTE,
-      );
+      expect(history.location.pathname).toBe(ONBOARDING_CREATE_PASSWORD_ROUTE);
     });
   });
 
   it('should set setParticipateInMetaMetrics to false when clicking cancel', async () => {
-    const { queryByText } = renderWithProvider(
+    const { queryByText, history } = renderWithProvider(
       <OnboardingMetametrics />,
       mockStore,
     );
@@ -110,14 +96,12 @@ describe('Onboarding Metametrics Component', () => {
 
     await waitFor(() => {
       expect(setParticipateInMetaMetrics).toHaveBeenCalledWith(false);
-      expect(mockPushHistory).toHaveBeenCalledWith(
-        ONBOARDING_CREATE_PASSWORD_ROUTE,
-      );
+      expect(history.location.pathname).toBe(ONBOARDING_CREATE_PASSWORD_ROUTE);
     });
   });
 
   it('should set setDataCollectionForMarketing to false when clicking cancel', async () => {
-    const { queryByText } = renderWithProvider(
+    const { queryByText, history } = renderWithProvider(
       <OnboardingMetametrics />,
       mockStore,
     );
@@ -128,9 +112,7 @@ describe('Onboarding Metametrics Component', () => {
 
     await waitFor(() => {
       expect(setDataCollectionForMarketing).toHaveBeenCalledWith(false);
-      expect(mockPushHistory).toHaveBeenCalledWith(
-        ONBOARDING_CREATE_PASSWORD_ROUTE,
-      );
+      expect(history.location.pathname).toBe(ONBOARDING_CREATE_PASSWORD_ROUTE);
     });
   });
 
