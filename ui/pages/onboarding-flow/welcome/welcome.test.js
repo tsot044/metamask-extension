@@ -16,9 +16,6 @@ import {
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
 import OnboardingWelcome from './welcome';
 
-const mockHistoryReplace = jest.fn();
-const mockHistoryPush = jest.fn();
-
 jest.mock('../../../store/actions.ts', () => ({
   setFirstTimeFlowType: jest.fn().mockReturnValue(
     jest.fn((type) => {
@@ -35,14 +32,6 @@ jest.mock('../../../store/actions.ts', () => ({
       return type;
     }),
   ),
-}));
-
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useHistory: () => ({
-    push: mockHistoryPush,
-    replace: mockHistoryReplace,
-  }),
 }));
 
 describe('Onboarding Welcome Component', () => {
@@ -63,13 +52,13 @@ describe('Onboarding Welcome Component', () => {
     it('should route to secure your wallet when keyring is present but not imported first time flow type', () => {
       const mockStore = configureMockStore([thunk])(initializedMockState);
 
-      renderWithProvider(<OnboardingWelcome />, mockStore);
-      expect(mockHistoryReplace).toHaveBeenCalledWith(
+      const { history } = renderWithProvider(<OnboardingWelcome />, mockStore);
+      expect(history.location.pathname).toBe(
         ONBOARDING_SECURE_YOUR_WALLET_ROUTE,
       );
     });
 
-    it('should route to completion when keyring is present and imported first time flow type', () => {
+    it.only('should route to completion when keyring is present and imported first time flow type', async () => {
       const importFirstTimeFlowState = {
         ...initializedMockState,
         metamask: {
@@ -79,10 +68,16 @@ describe('Onboarding Welcome Component', () => {
       };
       const mockStore = configureMockStore([thunk])(importFirstTimeFlowState);
 
-      renderWithProvider(<OnboardingWelcome />, mockStore);
-      expect(mockHistoryReplace).toHaveBeenCalledWith(
-        ONBOARDING_COMPLETION_ROUTE,
-      );
+      const { history } = renderWithProvider(<OnboardingWelcome />, mockStore);
+
+      console.log('history', JSON.stringify(history, null, 2));
+
+      //wait 10 seconds
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      console.log('history', JSON.stringify(history, null, 2));
+
+      expect(history.location.pathname).toBe(ONBOARDING_COMPLETION_ROUTE);
     });
   });
 
@@ -109,7 +104,7 @@ describe('Onboarding Welcome Component', () => {
     });
 
     it('should set first time flow to import and route to metametrics', async () => {
-      renderWithProvider(<OnboardingWelcome />, mockStore);
+      const { history } = renderWithProvider(<OnboardingWelcome />, mockStore);
       const termsCheckbox = screen.getByTestId('onboarding-terms-checkbox');
       fireEvent.click(termsCheckbox);
 
@@ -119,7 +114,7 @@ describe('Onboarding Welcome Component', () => {
       await waitFor(() => {
         expect(setTermsOfUseLastAgreed).toHaveBeenCalled();
         expect(setFirstTimeFlowType).toHaveBeenCalledWith('import');
-        expect(mockHistoryPush).toHaveBeenCalledWith(ONBOARDING_METAMETRICS);
+        expect(history.location.pathname).toBe(ONBOARDING_METAMETRICS);
       });
     });
   });

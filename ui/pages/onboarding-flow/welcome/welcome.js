@@ -1,7 +1,7 @@
 import EventEmitter from 'events';
 import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom-v5-compat';
 ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
 import { Carousel } from 'react-responsive-carousel';
 ///: END:ONLY_INCLUDE_IF
@@ -45,7 +45,7 @@ import { isFlask, isBeta } from '../../../helpers/utils/build-types';
 export default function OnboardingWelcome() {
   const t = useI18nContext();
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
   const [eventEmitter] = useState(new EventEmitter());
   const currentKeyring = useSelector(getCurrentKeyring);
   const firstTimeFlowType = useSelector(getFirstTimeFlowType);
@@ -56,19 +56,25 @@ export default function OnboardingWelcome() {
   // Don't allow users to come back to this screen after they
   // have already imported or created a wallet
   useEffect(() => {
+    console.log('wooanoo');
     if (currentKeyring && !newAccountCreationInProgress) {
+      console.log('wooanoo1', firstTimeFlowType);
       if (firstTimeFlowType === FirstTimeFlowType.import) {
-        history.replace(ONBOARDING_COMPLETION_ROUTE);
-      }
-      if (firstTimeFlowType === FirstTimeFlowType.restore) {
-        history.replace(ONBOARDING_COMPLETION_ROUTE);
+        console.log('wooanoo2');
+        navigate(ONBOARDING_COMPLETION_ROUTE, { replace: true });
+      } else if (firstTimeFlowType === FirstTimeFlowType.restore) {
+        console.log('wooanoo3');
+
+        navigate(ONBOARDING_COMPLETION_ROUTE, { replace: true });
       } else {
-        history.replace(ONBOARDING_SECURE_YOUR_WALLET_ROUTE);
+        console.log('wooanoo4');
+
+        navigate(ONBOARDING_SECURE_YOUR_WALLET_ROUTE, { replace: true });
       }
     }
   }, [
     currentKeyring,
-    history,
+    navigate,
     firstTimeFlowType,
     newAccountCreationInProgress,
   ]);
