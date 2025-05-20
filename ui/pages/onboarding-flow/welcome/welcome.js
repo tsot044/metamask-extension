@@ -56,19 +56,13 @@ export default function OnboardingWelcome() {
   // Don't allow users to come back to this screen after they
   // have already imported or created a wallet
   useEffect(() => {
-    console.log('wooanoo');
     if (currentKeyring && !newAccountCreationInProgress) {
-      console.log('wooanoo1', firstTimeFlowType);
-      if (firstTimeFlowType === FirstTimeFlowType.import) {
-        console.log('wooanoo2');
-        navigate(ONBOARDING_COMPLETION_ROUTE, { replace: true });
-      } else if (firstTimeFlowType === FirstTimeFlowType.restore) {
-        console.log('wooanoo3');
-
+      if (
+        firstTimeFlowType === FirstTimeFlowType.import ||
+        firstTimeFlowType === FirstTimeFlowType.restore
+      ) {
         navigate(ONBOARDING_COMPLETION_ROUTE, { replace: true });
       } else {
-        console.log('wooanoo4');
-
         navigate(ONBOARDING_SECURE_YOUR_WALLET_ROUTE, { replace: true });
       }
     }
@@ -78,6 +72,7 @@ export default function OnboardingWelcome() {
     firstTimeFlowType,
     newAccountCreationInProgress,
   ]);
+
   const trackEvent = useContext(MetaMetricsContext);
 
   const onCreateClick = async () => {
@@ -93,7 +88,7 @@ export default function OnboardingWelcome() {
     dispatch(setTermsOfUseLastAgreed(new Date().getTime()));
 
     ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
-    history.push(
+    navigate(
       getPlatform() === PLATFORM_FIREFOX
         ? ONBOARDING_CREATE_PASSWORD_ROUTE
         : ONBOARDING_METAMETRICS,
@@ -127,7 +122,7 @@ export default function OnboardingWelcome() {
     dispatch(setTermsOfUseLastAgreed(new Date().getTime()));
 
     ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
-    history.push(
+    navigate(
       getPlatform() === PLATFORM_FIREFOX
         ? ONBOARDING_IMPORT_WITH_SRP_ROUTE
         : ONBOARDING_METAMETRICS,

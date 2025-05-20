@@ -58,7 +58,7 @@ describe('Onboarding Welcome Component', () => {
       );
     });
 
-    it.only('should route to completion when keyring is present and imported first time flow type', async () => {
+    it('should route to completion when keyring is present and imported first time flow type', async () => {
       const importFirstTimeFlowState = {
         ...initializedMockState,
         metamask: {
@@ -69,14 +69,6 @@ describe('Onboarding Welcome Component', () => {
       const mockStore = configureMockStore([thunk])(importFirstTimeFlowState);
 
       const { history } = renderWithProvider(<OnboardingWelcome />, mockStore);
-
-      console.log('history', JSON.stringify(history, null, 2));
-
-      //wait 10 seconds
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      console.log('history', JSON.stringify(history, null, 2));
-
       expect(history.location.pathname).toBe(ONBOARDING_COMPLETION_ROUTE);
     });
   });
