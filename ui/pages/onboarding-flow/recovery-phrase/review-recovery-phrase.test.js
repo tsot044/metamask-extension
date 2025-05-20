@@ -1,20 +1,9 @@
-import { fireEvent } from '@testing-library/react';
+import { fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
 import configureMockStore from 'redux-mock-store';
 import { renderWithProvider } from '../../../../test/lib/render-helpers';
 import { ONBOARDING_CONFIRM_SRP_ROUTE } from '../../../helpers/constants/routes';
 import RecoveryPhrase from './review-recovery-phrase';
-
-const mockHistoryPush = jest.fn();
-const mockHistoryReplace = jest.fn();
-
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useHistory: () => ({
-    push: mockHistoryPush,
-    replace: mockHistoryReplace,
-  }),
-}));
 
 const mockStore = configureMockStore()({
   metamask: {
@@ -68,7 +57,7 @@ describe('Review Recovery Phrase Component', () => {
     expect(container).toMatchSnapshot();
   });
 
-  it('should click copy to cliboard', () => {
+  it('should click copy to clipboard', () => {
     const { queryByText, queryByTestId } = renderWithProvider(
       <RecoveryPhrase {...props} />,
       mockStore,
@@ -109,7 +98,7 @@ describe('Review Recovery Phrase Component', () => {
   });
 
   it('should click next after revealing seed phrase', () => {
-    const { queryByTestId } = renderWithProvider(
+    const { queryByTestId, history } = renderWithProvider(
       <RecoveryPhrase {...props} />,
       mockStore,
     );
@@ -122,12 +111,14 @@ describe('Review Recovery Phrase Component', () => {
 
     fireEvent.click(nextButton);
 
-    expect(mockHistoryPush).toHaveBeenCalledWith(ONBOARDING_CONFIRM_SRP_ROUTE);
+    expect(history.location.pathname).toBe(ONBOARDING_CONFIRM_SRP_ROUTE);
   });
 
   it('should route to url with reminder parameter', () => {
+    jest.useFakeTimers();
+
     const isReminderParam = '/?isFromReminder=true';
-    const { queryByTestId } = renderWithProvider(
+    const { queryByTestId, history } = renderWithProvider(
       <RecoveryPhrase {...props} />,
       mockStore,
       isReminderParam,
@@ -141,8 +132,10 @@ describe('Review Recovery Phrase Component', () => {
 
     fireEvent.click(nextButton);
 
-    expect(mockHistoryPush).toHaveBeenCalledWith(
-      `${ONBOARDING_CONFIRM_SRP_ROUTE}${isReminderParam}`,
-    );
+    waitFor(() => {
+      expect(history.location.pathname).toBe(
+        `${ONBOARDING_CONFIRM_SRP_ROUTE}${isReminderParam}`,
+      );
+    });
   });
 });

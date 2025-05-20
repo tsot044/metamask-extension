@@ -19,12 +19,9 @@ describe('Onboaring Flow Switch Component', () => {
     };
 
     const mockStore = configureMockStore()(mockState);
-    const { locationHolder } = renderWithProvider(
-      <OnboardingFlowSwitch />,
-      mockStore,
-    );
+    const { history } = renderWithProvider(<OnboardingFlowSwitch />, mockStore);
 
-    expect(locationHolder.location.pathname).toStrictEqual(DEFAULT_ROUTE);
+    expect(history.location.pathname).toStrictEqual(DEFAULT_ROUTE);
   });
 
   it('should route to completed onboarding route when seed phrase is other than null', () => {
@@ -35,12 +32,9 @@ describe('Onboaring Flow Switch Component', () => {
     };
 
     const mockStore = configureMockStore()(mockState);
-    const { locationHolder } = renderWithProvider(
-      <OnboardingFlowSwitch />,
-      mockStore,
-    );
+    const { history } = renderWithProvider(<OnboardingFlowSwitch />, mockStore);
 
-    expect(locationHolder.location.pathname).toStrictEqual(
+    expect(history.location.pathname).toStrictEqual(
       ONBOARDING_COMPLETION_ROUTE,
     );
   });
@@ -54,12 +48,9 @@ describe('Onboaring Flow Switch Component', () => {
     };
 
     const mockStore = configureMockStore()(mockState);
-    const { locationHolder } = renderWithProvider(
-      <OnboardingFlowSwitch />,
-      mockStore,
-    );
+    const { history } = renderWithProvider(<OnboardingFlowSwitch />, mockStore);
 
-    expect(locationHolder.location.pathname).toStrictEqual(LOCK_ROUTE);
+    expect(history.location.pathname).toStrictEqual(LOCK_ROUTE);
   });
 
   it('should route to unlock when with appropriate state', () => {
@@ -72,14 +63,9 @@ describe('Onboaring Flow Switch Component', () => {
     };
 
     const mockStore = configureMockStore()(mockState);
-    const { locationHolder } = renderWithProvider(
-      <OnboardingFlowSwitch />,
-      mockStore,
-    );
+    const { history } = renderWithProvider(<OnboardingFlowSwitch />, mockStore);
 
-    expect(locationHolder.location.pathname).toStrictEqual(
-      ONBOARDING_UNLOCK_ROUTE,
-    );
+    expect(history.location.pathname).toStrictEqual(ONBOARDING_UNLOCK_ROUTE);
   });
 
   it('should route to welcome route when not initialized', () => {
@@ -92,13 +78,8 @@ describe('Onboaring Flow Switch Component', () => {
     };
 
     const mockStore = configureMockStore()(mockState);
-    const { locationHolder } = renderWithProvider(
-      <OnboardingFlowSwitch />,
-      mockStore,
-    );
+    const { history } = renderWithProvider(<OnboardingFlowSwitch />, mockStore);
 
-    expect(locationHolder.location.pathname).toStrictEqual(
-      ONBOARDING_WELCOME_ROUTE,
-    );
+    expect(history.location.pathname).toStrictEqual(ONBOARDING_WELCOME_ROUTE);
   });
 });

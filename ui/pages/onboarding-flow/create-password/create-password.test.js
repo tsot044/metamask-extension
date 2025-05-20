@@ -10,17 +10,6 @@ import {
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
 import CreatePassword from './create-password';
 
-const mockHistoryPush = jest.fn();
-const mockHistoryReplace = jest.fn();
-
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useHistory: () => ({
-    push: mockHistoryPush,
-    replace: mockHistoryReplace,
-  }),
-}));
-
 describe('Onboarding Create Password', () => {
   const mockState = {
     metamask: {
@@ -42,8 +31,8 @@ describe('Onboarding Create Password', () => {
     it('should route to secure your wallet when keyring is present but not imported first time flow type', () => {
       const mockStore = configureMockStore()(initializedMockState);
 
-      renderWithProvider(<CreatePassword />, mockStore);
-      expect(mockHistoryReplace).toHaveBeenCalledWith(
+      const { history } = renderWithProvider(<CreatePassword />, mockStore);
+      expect(history.location.pathname).toBe(
         ONBOARDING_SECURE_YOUR_WALLET_ROUTE,
       );
     });
@@ -58,10 +47,8 @@ describe('Onboarding Create Password', () => {
       };
       const mockStore = configureMockStore()(importFirstTimeFlowState);
 
-      renderWithProvider(<CreatePassword />, mockStore);
-      expect(mockHistoryReplace).toHaveBeenCalledWith(
-        ONBOARDING_COMPLETION_ROUTE,
-      );
+      const { history } = renderWithProvider(<CreatePassword />, mockStore);
+      expect(history.location.pathname).toBe(ONBOARDING_COMPLETION_ROUTE);
     });
   });
 
@@ -288,7 +275,7 @@ describe('Onboarding Create Password', () => {
   describe('Create New Account', () => {
     it('should create new account with correct passwords and terms checked', async () => {
       const mockStore = configureMockStore()(mockState);
-      const { queryByTestId } = renderWithProvider(
+      const { queryByTestId, history } = renderWithProvider(
         <CreatePassword createNewAccount={mockCreateNewAccount} />,
         mockStore,
       );
@@ -324,7 +311,7 @@ describe('Onboarding Create Password', () => {
       expect(mockCreateNewAccount).toHaveBeenCalledWith(password);
 
       await waitFor(() => {
-        expect(mockHistoryPush).toHaveBeenCalledWith(
+        expect(history.location.pathname).toBe(
           ONBOARDING_SECURE_YOUR_WALLET_ROUTE,
         );
       });
@@ -348,7 +335,7 @@ describe('Onboarding Create Password', () => {
         secretRecoveryPhrase: 'SRP',
       };
 
-      const { queryByTestId } = renderWithProvider(
+      const { queryByTestId, history } = renderWithProvider(
         <CreatePassword {...props} />,
         mockStore,
       );
@@ -389,9 +376,7 @@ describe('Onboarding Create Password', () => {
       );
 
       await waitFor(() => {
-        expect(mockHistoryPush).toHaveBeenCalledWith(
-          ONBOARDING_COMPLETION_ROUTE,
-        );
+        expect(history.location.pathname).toBe(ONBOARDING_COMPLETION_ROUTE);
       });
     });
   });

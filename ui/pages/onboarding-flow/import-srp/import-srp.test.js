@@ -6,15 +6,6 @@ import { ONBOARDING_CREATE_PASSWORD_ROUTE } from '../../../helpers/constants/rou
 import { renderWithProvider } from '../../../../test/lib/render-helpers';
 import ImportSrp from './import-srp';
 
-const mockHistoryReplace = jest.fn();
-
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useHistory: () => ({
-    replace: mockHistoryReplace,
-  }),
-}));
-
 const TEST_SEED =
   'debris dizzy just program just float decrease vacant alarm reduce speak stadium';
 
@@ -40,11 +31,9 @@ describe('Import SRP', () => {
 
   it('should route to create password route when keyring is already initialized', () => {
     const mockStore = configureMockStore()(initializedMockState);
-    renderWithProvider(<ImportSrp />, mockStore);
+    const { history } = renderWithProvider(<ImportSrp />, mockStore);
 
-    expect(mockHistoryReplace).toHaveBeenCalledWith(
-      ONBOARDING_CREATE_PASSWORD_ROUTE,
-    );
+    expect(history.location.pathname).toBe(ONBOARDING_CREATE_PASSWORD_ROUTE);
   });
 
   it('should render import srp and disable confirm srp button', () => {
@@ -63,7 +52,7 @@ describe('Import SRP', () => {
     const mockStore = configureMockStore()(mockState);
     const mockSubmitSecretRecoveryPhrase = jest.fn();
 
-    const { queryByTestId } = renderWithProvider(
+    const { queryByTestId, history } = renderWithProvider(
       <ImportSrp submitSecretRecoveryPhrase={mockSubmitSecretRecoveryPhrase} />,
       mockStore,
     );
@@ -77,9 +66,7 @@ describe('Import SRP', () => {
     fireEvent.click(confirmSrpButton);
 
     expect(mockSubmitSecretRecoveryPhrase).toHaveBeenCalledWith(TEST_SEED);
-    expect(mockHistoryReplace).toHaveBeenCalledWith(
-      ONBOARDING_CREATE_PASSWORD_ROUTE,
-    );
+    expect(history.location.pathname).toBe(ONBOARDING_CREATE_PASSWORD_ROUTE);
   });
 
   function inputSRP(seedStr, queryByTestId) {
