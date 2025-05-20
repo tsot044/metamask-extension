@@ -23,15 +23,6 @@ jest.mock('react-redux', () => {
   };
 });
 
-const mockHistory = {
-  push: jest.fn(),
-};
-
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useHistory: () => mockHistory,
-}));
-
 const mockState = {
   metamask: {
     ...mockMultichainNetworkState(),
@@ -177,7 +168,7 @@ describe('useHandleSendNonEvm', () => {
     });
 
     it('pushes the confirmation page in history', async () => {
-      const { result } = renderHookWithProvider(
+      const { result, history } = renderHookWithProvider(
         () =>
           useHandleSendNonEvm(
             'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp/token:EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
@@ -188,7 +179,7 @@ describe('useHandleSendNonEvm', () => {
 
       await handleSendNonEvm();
 
-      expect(mockHistory.push).toHaveBeenCalledWith(
+      expect(history.location.pathname).toBe(
         `${CONFIRMATION_V_NEXT_ROUTE}/${mockState.metamask.pendingApprovals[0].id}`,
       );
     });
@@ -216,7 +207,7 @@ describe('useHandleSendNonEvm', () => {
       });
 
       it('pushes the confirmation page in history', async () => {
-        const { result } = renderHookWithProvider(
+        const { result, history } = renderHookWithProvider(
           () => useHandleSendNonEvm(),
           mockState,
         );
@@ -224,7 +215,7 @@ describe('useHandleSendNonEvm', () => {
 
         await handleSendNonEvm();
 
-        expect(mockHistory.push).toHaveBeenCalledWith(
+        expect(history.location.pathname).toBe(
           `${CONFIRMATION_V_NEXT_ROUTE}/${mockState.metamask.pendingApprovals[0].id}`,
         );
       });
