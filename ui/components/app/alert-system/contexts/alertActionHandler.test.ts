@@ -1,3 +1,4 @@
+// TODO Howard
 import React from 'react';
 import { renderHookWithProvider } from '../../../../../test/lib/render-helpers';
 import { useAlertActionHandler } from './alertActionHandler';
@@ -13,15 +14,14 @@ describe('alertActionHandler', () => {
   });
 
   it('returns the context value when used within AlertActionHandlerProvider', () => {
+    const mockProcessAction = jest.fn();
+
     jest.mock('react', () => ({
       ...jest.requireActual('react'),
-      useContext: jest.fn(),
+      useContext: jest.fn(() => ({
+        processAction: mockProcessAction,
+      })),
     }));
-
-    const mockProcessAction = jest.fn();
-    (React.useContext as jest.Mock).mockReturnValue({
-      processAction: mockProcessAction,
-    });
 
     const { result } = renderHookWithProvider(() => useAlertActionHandler(), {
       processAction: mockProcessAction,
