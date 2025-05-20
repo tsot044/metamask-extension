@@ -2,7 +2,6 @@ import { waitFor } from '@testing-library/dom';
 import React from 'react';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import ConfirmTransaction from '.';
 import _mockState from '../../../../test/data/mock-state.json';
 import { renderWithProvider } from '../../../../test/lib/render-helpers';
 import * as ConfirmTransactionDucks from '../../../ducks/confirm-transaction/confirm-transaction.duck';
@@ -13,6 +12,7 @@ import {
 } from '../../../helpers/constants/routes';
 import * as Actions from '../../../store/actions';
 import { setBackgroundConnection } from '../../../store/background-connection';
+import ConfirmTransaction from '.';
 
 const mockUnapprovedTx = _mockState.metamask.transactions[0];
 

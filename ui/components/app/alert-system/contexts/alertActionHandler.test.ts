@@ -1,5 +1,4 @@
 // TODO Howard
-import React from 'react';
 import { renderHookWithProvider } from '../../../../../test/lib/render-helpers';
 import { useAlertActionHandler } from './alertActionHandler';
 
