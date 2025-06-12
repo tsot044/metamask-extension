@@ -2,9 +2,35 @@ import React from 'react';
 import { getManifestFlags } from '../../../shared/lib/manifestFlags';
 import { endTrace, trace, TraceName } from '../../../shared/lib/trace';
 
-type DynamicImportType = () => Promise<{ default: React.ComponentType }>;
-type ModuleWithDefaultType = {
-  default: React.ComponentType;
+type ImportedModule =
+  | ComponentModuleWithNamedExport
+  | WrappedComponentModule
+  | ComponentModule;
+
+type ReactComponentType = React.ComponentType<any>;
+
+type ComponentModuleWithNamedExport = {
+  [componentName in string as componentName extends 'default'
+    ? never
+    : componentName]: ReactComponentType;
+};
+
+function hasDefaultExport(
+  module: Record<string, unknown>,
+): module is { default: unknown } {
+  return Boolean(
+    'default' in module && typeof module.default === 'object' && module.default,
+  );
+}
+
+type WrappedComponentModule = {
+  default: {
+    WrappedComponent: ReactComponentType;
+  };
+};
+
+type ComponentModule = {
+  default: ReactComponentType;
 };
 
 // This only has to happen once per app load, so do it outside a function
@@ -17,13 +43,16 @@ const lazyLoadSubSampleRate = getManifestFlags().sentry?.lazyLoadSubSampleRate;
  *
  * @param fn - an import of the form `() => import('AAA')`
  */
-export function mmLazy(fn: DynamicImportType) {
+export function mmLazy<InputType extends () => Promise<ImportedModule>>(
+  fn: InputType,
+) {
   return React.lazy(async () => {
     // We can't start the trace here because we don't have the componentName yet, so we just hold the startTime
     const startTime = Date.now();
 
     const importedModule = await fn();
-    const { componentName, component } = parseImportedComponent(importedModule);
+    const { componentName, component } =
+      parseImportedComponent<ImportedModule>(importedModule);
 
     // Only trace load time of lazy-loaded components if the manifestFlag is set, and then do it by Math.random probability
     if (lazyLoadSubSampleRate && Math.random() < lazyLoadSubSampleRate) {
@@ -40,44 +69,44 @@ export function mmLazy(fn: DynamicImportType) {
   });
 }
 
-// There can be a lot of different types here, and we're basically doing type-checking in the code,
-// so I don't think TypeScript safety on `importedModule` is worth it in this function
-
-// TODO: Fix in https://github.com/MetaMask/metamask-extension/issues/31973
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function parseImportedComponent(importedModule: any): {
+function parseImportedComponent<ModuleWithComponentType extends ImportedModule>(
+  importedModule: NoInfer<ModuleWithComponentType>,
+): {
   componentName: string; // TODO: in many circumstances, the componentName gets minified
-  component: ModuleWithDefaultType;
+  component: ComponentModule | WrappedComponentModule;
 } {
   let componentName: string;
 
   // If there's no default export
-  if (!importedModule.default) {
+  if (!hasDefaultExport(importedModule)) {
     const keys = Object.keys(importedModule);
 
     // If there's only one named export
     if (keys.length === 1) {
-      componentName = keys[0];
+      [componentName] = keys;
 
       return {
         componentName,
         // Force the component to be the default export
-        component: { default: importedModule[componentName] },
+        component: {
+          default: importedModule[
+            componentName as keyof typeof importedModule
+          ] as ComponentModuleWithNamedExport[string],
+        },
       };
     }
-
     // If there are multiple named exports, this isn't good for tree-shaking, so throw an error
     throw new Error(
       'mmLazy: You cannot lazy-load a component when there are multiple exported components in one file',
     );
   }
 
-  if (importedModule.default.WrappedComponent) {
+  if ('WrappedComponent' in importedModule.default) {
     // If there's a wrapped component, we don't want to see the name reported as `withRouter(Connect(AAA))` we want just `AAA`
-    componentName = importedModule.default.WrappedComponent.name;
+    componentName = importedModule.default.WrappedComponent.name ?? '';
   } else {
     componentName =
-      importedModule.default.name || importedModule.default.displayName;
+      (importedModule.default.name || importedModule.default.displayName) ?? '';
   }
 
   return {
