@@ -21,11 +21,11 @@ import { MetaMetricsControllerState } from '../../../controllers/metametrics-con
 import { shouldEmitDappViewedEvent } from '../../util';
 import {
   GetAccounts,
+  GetCaip25PermissionFromLegacyPermissionsForOrigin,
   GetUnlockPromise,
   HandlerWrapper,
+  RequestPermissionsForOrigin,
   SendMetrics,
-  RequestCaip25ApprovalForOrigin,
-  GrantPermissionsForOrigin,
 } from './types';
 
 export type RequestEthereumAccountsOptions = {
@@ -37,8 +37,8 @@ export type RequestEthereumAccountsOptions = {
     permissionHistory: PermissionLogControllerState['permissionHistory'];
     accounts: AccountTrackerControllerState['accounts'];
   };
-  requestCaip25ApprovalForOrigin: RequestCaip25ApprovalForOrigin;
-  grantPermissionsForOrigin: GrantPermissionsForOrigin;
+  getCaip25PermissionFromLegacyPermissionsForOrigin: GetCaip25PermissionFromLegacyPermissionsForOrigin;
+  requestPermissionsForOrigin: RequestPermissionsForOrigin;
 };
 
 type RequestEthereumAccountsConstraint<
@@ -66,8 +66,8 @@ const requestEthereumAccounts = {
     getUnlockPromise: true,
     sendMetrics: true,
     metamaskState: true,
-    requestCaip25ApprovalForOrigin: true,
-    grantPermissionsForOrigin: true,
+    getCaip25PermissionFromLegacyPermissionsForOrigin: true,
+    requestPermissionsForOrigin: true,
   },
 } satisfies RequestEthereumAccountsConstraint;
 export default requestEthereumAccounts;
@@ -91,8 +91,8 @@ const locks = new Set();
  * @param options.getUnlockPromise - A hook that resolves when the wallet is unlocked.
  * @param options.sendMetrics - A hook that helps track metric events.
  * @param options.metamaskState - The MetaMask app state.
- * @param options.requestCaip25ApprovalForOrigin - A hook that requests approval for the CAIP-25 permission for the origin.
- * @param options.grantPermissionsForOrigin - A hook that grants permission for the approved permissions for the origin.
+ * @param options.getCaip25PermissionFromLegacyPermissionsForOrigin - A hook that returns a CAIP-25 permission from a legacy `eth_accounts` and `endowment:permitted-chains` permission.
+ * @param options.requestPermissionsForOrigin - A hook that requests CAIP-25 permissions for the origin.
  * @returns A promise that resolves to nothing
  */
 async function requestEthereumAccountsHandler<
@@ -107,8 +107,8 @@ async function requestEthereumAccountsHandler<
     getUnlockPromise,
     sendMetrics,
     metamaskState,
-    requestCaip25ApprovalForOrigin,
-    grantPermissionsForOrigin,
+    getCaip25PermissionFromLegacyPermissionsForOrigin,
+    requestPermissionsForOrigin,
   }: RequestEthereumAccountsOptions,
 ) {
   const { origin } = req ?? {};
@@ -138,8 +138,9 @@ async function requestEthereumAccountsHandler<
   }
 
   try {
-    const caip25Approval = await requestCaip25ApprovalForOrigin();
-    await grantPermissionsForOrigin(caip25Approval);
+    const caip25Permission =
+      getCaip25PermissionFromLegacyPermissionsForOrigin();
+    await requestPermissionsForOrigin(caip25Permission);
   } catch (error) {
     return end(error);
   }
@@ -155,18 +156,23 @@ async function requestEthereumAccountsHandler<
     const isFirstVisit = !Object.keys(metamaskState.permissionHistory).includes(
       origin,
     );
-    sendMetrics({
-      event: MetaMetricsEventName.DappViewed,
-      category: MetaMetricsEventCategory.InpageProvider,
-      referrer: {
-        url: origin,
+    sendMetrics(
+      {
+        event: MetaMetricsEventName.DappViewed,
+        category: MetaMetricsEventCategory.InpageProvider,
+        referrer: {
+          url: origin,
+        },
+        properties: {
+          is_first_visit: isFirstVisit,
+          number_of_accounts: Object.keys(metamaskState.accounts).length,
+          number_of_accounts_connected: ethAccounts.length,
+        },
       },
-      properties: {
-        is_first_visit: isFirstVisit,
-        number_of_accounts: Object.keys(metamaskState.accounts).length,
-        number_of_accounts_connected: ethAccounts.length,
+      {
+        excludeMetaMetricsId: true,
       },
-    });
+    );
   }
 
   res.result = ethAccounts;
