@@ -35,7 +35,7 @@ export type RequestEthereumAccountsOptions = {
   metamaskState: {
     metaMetricsId: MetaMetricsControllerState['metaMetricsId'];
     permissionHistory: PermissionLogControllerState['permissionHistory'];
-    accounts: AccountTrackerControllerState['accounts'];
+    accountsByChainId: AccountTrackerControllerState['accountsByChainId'];
   };
   getCaip25PermissionFromLegacyPermissionsForOrigin: GetCaip25PermissionFromLegacyPermissionsForOrigin;
   requestPermissionsForOrigin: RequestPermissionsForOrigin;
@@ -165,7 +165,14 @@ async function requestEthereumAccountsHandler<
         },
         properties: {
           is_first_visit: isFirstVisit,
-          number_of_accounts: Object.keys(metamaskState.accounts).length,
+          number_of_accounts: Object.keys(
+            metamaskState.accountsByChainId,
+          ).reduce((total, chainId) => {
+            return (
+              total +
+              Object.keys(metamaskState.accountsByChainId[chainId]).length
+            );
+          }, 0),
           number_of_accounts_connected: ethAccounts.length,
         },
       },
