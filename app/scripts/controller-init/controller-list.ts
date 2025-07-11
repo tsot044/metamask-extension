@@ -43,6 +43,10 @@ import { DelegationController } from '@metamask/delegation-controller';
 
 import { RemoteFeatureFlagController } from '@metamask/remote-feature-flag-controller';
 import { AccountTreeController } from '@metamask/account-tree-controller';
+import {
+  WebSocketService as BackendWebSocketService,
+  AccountActivityService,
+} from '@metamask/backend-platform';
 import OnboardingController from '../controllers/onboarding';
 import { PreferencesController } from '../controllers/preferences-controller';
 import SwapsController from '../controllers/swaps';
@@ -88,7 +92,9 @@ export type Controller =
   | NftDetectionController
   | AssetsContractController
   | AccountTreeController
-  | WebSocketService;
+  | WebSocketService
+  | BackendWebSocketService
+  | AccountActivityService;
 
 /**
  * Flat state object for all controllers supporting or required by modular initialization.

@@ -41,6 +41,10 @@ import {
   getNotificationServicesControllerMessenger,
   getNotificationServicesPushControllerMessenger,
 } from './notifications';
+import {
+  getWebSocketServiceMessenger as getBackendWebSocketServiceMessenger,
+  getAccountActivityServiceMessenger,
+} from './backend-platform';
 import { getDeFiPositionsControllerMessenger } from './defi-positions';
 import { getDeFiPositionsControllerInitMessenger } from './defi-positions/defi-positions-controller-messenger';
 import {
@@ -158,7 +162,11 @@ export const CONTROLLER_MESSENGERS = {
     getInitMessenger: getAccountTreeControllerInitMessenger,
   },
   WebSocketService: {
-    getMessenger: getWebSocketServiceMessenger,
+    getMessenger: getBackendWebSocketServiceMessenger,
+    getInitMessenger: noop,
+  },
+  AccountActivityService: {
+    getMessenger: getAccountActivityServiceMessenger,
     getInitMessenger: noop,
   },
 } as const;

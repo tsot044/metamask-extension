@@ -393,7 +393,6 @@ import {
   SnapInsightsControllerInit,
   SnapInterfaceControllerInit,
   SnapsRegistryInit,
-  WebSocketServiceInit,
 } from './controller-init/snaps';
 import { AuthenticationControllerInit } from './controller-init/identity/authentication-controller-init';
 import { UserStorageControllerInit } from './controller-init/identity/user-storage-controller-init';
@@ -413,6 +412,10 @@ import {
 import { getIsQuicknodeEndpointUrl } from './lib/network-controller/utils';
 import { isRelaySupported } from './lib/transaction/transaction-relay';
 import { AccountTreeControllerInit } from './controller-init/accounts/account-tree-controller-init';
+import {
+  WebSocketServiceInit,
+  AccountActivityServiceInit,
+} from './controller-init/backend-platform';
 import OAuthService from './services/oauth/oauth-service';
 import { webAuthenticatorFactory } from './services/oauth/web-authenticator-factory';
 
@@ -996,6 +999,7 @@ export default class MetamaskController extends EventEmitter {
         'TokensController:stateChange',
         'NetworkController:stateChange',
         'KeyringController:accountRemoved',
+        'AccountActivityService:balanceUpdated',
       ],
     });
 
@@ -1946,6 +1950,7 @@ export default class MetamaskController extends EventEmitter {
       DeFiPositionsController: DeFiPositionsControllerInit,
       DelegationController: DelegationControllerInit,
       AccountTreeController: AccountTreeControllerInit,
+      AccountActivityService: AccountActivityServiceInit,
     };
 
     const {
@@ -1998,6 +2003,8 @@ export default class MetamaskController extends EventEmitter {
       controllersByName.NotificationServicesPushController;
     this.deFiPositionsController = controllersByName.DeFiPositionsController;
     this.accountWalletController = controllersByName.AccountTreeController;
+    this.webSocketService = controllersByName.WebSocketService;
+    this.accountActivityService = controllersByName.AccountActivityService;
 
     this.notificationServicesController.init();
     this.snapController.init();
@@ -8612,4 +8619,6 @@ export default class MetamaskController extends EventEmitter {
       initRequest,
     });
   }
+
+
 }
