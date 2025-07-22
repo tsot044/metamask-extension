@@ -25,7 +25,7 @@ _Note: You are billed for both time spent running, and for storage used_
 1. Start by clicking the button above
 2. A new browser tab will open with a remote version of Visual Studio Code (this will take a few minutes to load)
 3. A "Simple Browser" will open inside the browser with noVNC -- click Connect
-   - Optional steps:
+   - Optional  steps:
      - Click the button at the upper-right of the Simple Browser tab to open the noVNC window in its own tab
      - Open the noVNC sidebar on the left, click the gear icon, change the Scaling Mode to Remote Resizing
 4. Wait about 20 extra seconds on the first launch, for the scripts to finish
