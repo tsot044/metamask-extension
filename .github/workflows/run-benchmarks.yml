@@ -31,18 +31,12 @@ jobs:
           skip-allow-scripts: true
           yarn-custom-url: ${{ vars.YARN_URL }}
 
-      # Get the commit hash of the checked out commit
-      - name: Get commit hash
-        id: get-commit-hash
-        run: echo "actual-commit-hash=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-        shell: bash
-
       - name: Restore .metamask directory
         id: restore-metamask
         uses: actions/cache/restore@v4
         with:
           path: .metamask
-          key: node-modules-${{ steps.get-commit-hash.outputs.actual-commit-hash }}
+          key: .metamask-${{ hashFiles('yarn.lock') }}
           fail-on-cache-miss: false
 
       - name: Install anvil if cache missed
