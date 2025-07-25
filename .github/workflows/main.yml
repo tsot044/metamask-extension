@@ -53,8 +53,8 @@ jobs:
       - name: Cache .metamask folder
         uses: actions/cache/save@v4
         with:
-          path: node_modules/.bin/anvil
-          key: anvil-${{ hashFiles('yarn.lock') }}
+          path: .metamask
+          key: .metamask-${{ hashFiles('yarn.lock') }}
 
   lint-workflows:
     name: Lint workflows
@@ -193,8 +193,7 @@ jobs:
   run-benchmarks:
     uses: ./.github/workflows/run-benchmarks.yml
     needs:
-      - build-test-browserify
-      - build-test-webpack
+      - prep-deps
 
   run-tests:
     name: Run tests

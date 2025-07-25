@@ -72,8 +72,8 @@ jobs:
         id: restore-metamask
         uses: actions/cache/restore@v4
         with:
-          path: node_modules/.bin/anvil
-          key: anvil-${{ hashFiles('yarn.lock') }}
+          path: .metamask
+          key: .metamask-${{ hashFiles('yarn.lock') }}
           fail-on-cache-miss: false
 
       - name: Install anvil if cache missed
