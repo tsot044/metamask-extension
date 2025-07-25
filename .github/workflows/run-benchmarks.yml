@@ -31,12 +31,12 @@ jobs:
           skip-allow-scripts: true
           yarn-custom-url: ${{ vars.YARN_URL }}
 
-      - name: Restore .metamask directory
+      - name: Restore .metamask folder
         id: restore-metamask
         uses: actions/cache/restore@v4
         with:
-          path: .metamask
-          key: .metamask-${{ hashFiles('yarn.lock') }}
+          path: node_modules/.bin/anvil
+          key: anvil-${{ hashFiles('yarn.lock') }}
           fail-on-cache-miss: false
 
       - name: Install anvil if cache missed

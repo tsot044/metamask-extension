@@ -49,12 +49,12 @@ jobs:
           skip-allow-scripts: true
           yarn-custom-url: ${{ vars.YARN_URL }}
 
-      # Need to cache `.metamask` directory for the anvil binary
-      - name: Cache .metamask directory
+      # Need to cache `.metamask` folder for the anvil binary
+      - name: Cache .metamask folder
         uses: actions/cache/save@v4
         with:
-          path: .metamask
-          key: .metamask-${{ hashFiles('yarn.lock') }}
+          path: node_modules/.bin/anvil
+          key: anvil-${{ hashFiles('yarn.lock') }}
 
   lint-workflows:
     name: Lint workflows

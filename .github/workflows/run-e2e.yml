@@ -68,12 +68,12 @@ jobs:
           is-high-risk-environment: false
           skip-allow-scripts: true
 
-      - name: Restore .metamask directory
+      - name: Restore .metamask folder
         id: restore-metamask
         uses: actions/cache/restore@v4
         with:
-          path: .metamask
-          key: .metamask-${{ hashFiles('yarn.lock') }}
+          path: node_modules/.bin/anvil
+          key: anvil-${{ hashFiles('yarn.lock') }}
           fail-on-cache-miss: false
 
       - name: Install anvil if cache missed
