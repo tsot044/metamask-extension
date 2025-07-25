@@ -31,6 +31,9 @@ jobs:
           skip-allow-scripts: true
           yarn-custom-url: ${{ vars.YARN_URL }}
 
+      - name: Debugging with tmate
+        uses: ./.github/actions/actions-tmate
+
       # not installed by checkout-and-setup when cache is restored
       # - name: Install anvil
       #   run: yarn mm-foundryup
