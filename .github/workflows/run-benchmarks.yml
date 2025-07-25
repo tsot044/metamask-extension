@@ -43,6 +43,9 @@ jobs:
         if: ${{ steps.restore-metamask.outputs.cache-hit != 'true'}}
         run: yarn mm-foundryup
 
+      - name: Debugging with tmate
+        uses: ./.github/actions/actions-tmate
+
       - name: Download artifact '${{ env.ARTIFACT_NAME }}'
         uses: actions/download-artifact@v4
         with:
