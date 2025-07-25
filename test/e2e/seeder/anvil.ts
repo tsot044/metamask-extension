@@ -69,17 +69,20 @@ export class Anvil {
 
     // Verify that the anvil binary is accessible
     try {
-      const versionOutput = execSync('anvil --version', { encoding: 'utf-8' });
+      const versionOutput = execSync(`${anvilBinaryDir}/anvil --version`, {
+        encoding: 'utf-8',
+      });
       console.log(`Anvil version: ${versionOutput}`);
       console.log(
         `Anvil server started on port: ${options.port} with chainId: ${options.chainId}`,
       );
+
+      this.#server = createAnvil(options);
     } catch (error) {
       console.error('Failed to execute anvil:', error);
       throw new Error('Anvil binary is not accessible.');
     }
 
-    this.#server = createAnvil(options);
     await this.#server.start();
   }
 
