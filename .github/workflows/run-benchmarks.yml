@@ -31,12 +31,26 @@ jobs:
           skip-allow-scripts: true
           yarn-custom-url: ${{ vars.YARN_URL }}
 
-      - name: Debugging with tmate
-        uses: ./.github/actions/actions-tmate
+      # - name: Debugging with tmate
+      # uses: ./.github/actions/actions-tmate
 
       # not installed by checkout-and-setup when cache is restored
       # - name: Install anvil
       #   run: yarn mm-foundryup
+
+      # Get the commit hash of the checked out commit regardless of whether it
+      # was checked out in the previous step or existed before.
+      - name: Get commit hash
+        id: get-commit-hash
+        run: echo "actual-commit-hash=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+        shell: bash
+
+      - name: Restore .metamask directory
+        uses: actions/cache/restore@v4
+        with:
+          path: .metamask
+          key: node-modules-${{ steps.get-commit-hash.outputs.actual-commit-hash }}
+          fail-on-cache-miss: true
 
       - name: Download artifact '${{ env.ARTIFACT_NAME }}'
         uses: actions/download-artifact@v4

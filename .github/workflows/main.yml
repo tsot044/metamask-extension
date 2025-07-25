@@ -49,6 +49,20 @@ jobs:
           skip-allow-scripts: true
           yarn-custom-url: ${{ vars.YARN_URL }}
 
+      # Get the commit hash of the checked out commit regardless of whether it
+      # was checked out in the previous step or existed before.
+      - name: Get commit hash
+        id: get-commit-hash
+        run: echo "actual-commit-hash=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+        shell: bash
+
+      # Need to cache `.metamask` directory for the anvil binary
+      - name: Cache .metamask directory
+        uses: actions/cache/save@v4
+        with:
+          path: .metamask
+          key: node-modules-${{ steps.get-commit-hash.outputs.actual-commit-hash }}
+
   run-benchmarks:
     uses: ./.github/workflows/run-benchmarks.yml
     needs:
