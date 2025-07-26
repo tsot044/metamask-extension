@@ -88,6 +88,9 @@ jobs:
         with:
           name: ${{ inputs.build-artifact }}
 
+      - name: Debugging with tmate
+        uses: ./.github/actions/actions-tmate
+
       # if there is a build-command and there is no build artifact, or the specified artifact does not exist, we run the build command
       - run: ${{ inputs.build-command }}
         if: ${{ inputs.build-command != '' && (inputs.build-artifact == '' || steps.download-build-artifact.outcome == 'failure') }}

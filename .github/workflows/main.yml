@@ -194,6 +194,8 @@ jobs:
     uses: ./.github/workflows/run-benchmarks.yml
     needs:
       - prep-deps
+      - build-test-browserify
+      - build-test-webpack
 
   run-tests:
     name: Run tests

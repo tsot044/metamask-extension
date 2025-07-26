@@ -65,6 +65,8 @@ export class Anvil {
       options.blockTime = 2;
     }
 
+    console.log('cwd:', process.cwd());
+
     // Determine the path to the anvil binary directory
     const anvilBinaryDir = join('node_modules', '.bin');
 
