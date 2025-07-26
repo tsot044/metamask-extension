@@ -1,6 +1,10 @@
-import { delimiter, join } from 'path';
+import {
+  Anvil as AnvilType,
+  createAnvil,
+  CreateAnvilOptions,
+} from '@viem/anvil';
 import { execSync } from 'child_process';
-import { createAnvil, Anvil as AnvilType } from '@viem/anvil';
+import { delimiter, join } from 'path';
 import { createAnvilClients } from './anvil-clients';
 
 type Hardfork =
@@ -54,7 +58,7 @@ export class Anvil {
       noMining?: boolean;
     } = {},
   ): Promise<void> {
-    const options = { ...defaultOptions, ...opts };
+    const options: CreateAnvilOptions = { ...defaultOptions, ...opts };
 
     // Set blockTime if noMining is disabled, as those 2 options are incompatible
     if (!opts?.noMining && !opts?.blockTime) {
@@ -63,6 +67,8 @@ export class Anvil {
 
     // Determine the path to the anvil binary directory
     const anvilBinaryDir = join(process.cwd(), 'node_modules', '.bin');
+
+    options.anvilBinary = join(anvilBinaryDir, 'anvil');
 
     // Prepend the anvil binary directory to the PATH environment variable
     process.env.PATH = `${anvilBinaryDir}${delimiter}${process.env.PATH}`;
@@ -76,13 +82,12 @@ export class Anvil {
       console.log(
         `Anvil server started on port: ${options.port} with chainId: ${options.chainId}`,
       );
-
-      this.#server = createAnvil(options);
     } catch (error) {
       console.error('Failed to execute anvil:', error);
-      throw new Error('Anvil binary is not accessible.');
+      // throw new Error('Anvil binary is not accessible.');
     }
 
+    this.#server = createAnvil(options);
     await this.#server.start();
   }
 
