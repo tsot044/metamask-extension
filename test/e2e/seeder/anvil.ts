@@ -66,7 +66,7 @@ export class Anvil {
     }
 
     // Determine the path to the anvil binary directory
-    const anvilBinaryDir = join(process.cwd(), 'node_modules', '.bin');
+    const anvilBinaryDir = join('node_modules', '.bin');
 
     options.anvilBinary = join(anvilBinaryDir, 'anvil');
 
