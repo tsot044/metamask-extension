@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "02299f4c-d55b-4c1c-8d6d-9ea64b6a8336"
+      }
+    },
+    "android": {
+      "package": "com.tsot044.metamaskcrx"
+    }
+  }
+}
